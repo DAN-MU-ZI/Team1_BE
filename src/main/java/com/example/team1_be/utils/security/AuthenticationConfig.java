@@ -57,11 +57,11 @@ public class AuthenticationConfig {
 				.contentSecurityPolicy("script-src 'self'");
 		}
 
-		http.exceptionHandling()
-			.authenticationEntryPoint(new CustomAuthenticationEntryPoint(om));
-
-		http.exceptionHandling()
-			.accessDeniedHandler(new CustomAccessDeniedHandler(om));
+//		http.exceptionHandling()
+//			.authenticationEntryPoint(new CustomAuthenticationEntryPoint(om));
+//
+//		http.exceptionHandling()
+//			.accessDeniedHandler(new CustomAccessDeniedHandler(om));
 
 		authorizeLogin(http);
 
