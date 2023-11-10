@@ -1,14 +1,7 @@
 package com.example.team1_be.utils.security;
 
-import com.example.team1_be.domain.User.Role.RoleType;
-import com.example.team1_be.utils.security.auth.CustomAccessDeniedHandler;
-import com.example.team1_be.utils.security.auth.CustomAuthenticationEntryPoint;
-import com.example.team1_be.utils.security.auth.jwt.JwtProvider;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import java.util.Arrays;
-import java.util.Collections;
 import java.util.List;
-import lombok.RequiredArgsConstructor;
+
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.core.env.Environment;
@@ -19,6 +12,14 @@ import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import org.springframework.web.cors.CorsConfiguration;
+
+import com.example.team1_be.domain.User.Role.RoleType;
+import com.example.team1_be.utils.security.auth.CustomAccessDeniedHandler;
+import com.example.team1_be.utils.security.auth.CustomAuthenticationEntryPoint;
+import com.example.team1_be.utils.security.auth.jwt.JwtProvider;
+import com.fasterxml.jackson.databind.ObjectMapper;
+
+import lombok.RequiredArgsConstructor;
 
 @EnableWebSecurity(debug = true)
 @RequiredArgsConstructor
@@ -33,22 +34,22 @@ public class AuthenticationConfig {
 	@Bean
 	public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
 		http.httpBasic()
-			.disable();
+				.disable();
 
 		http.csrf()
-			.disable();
+				.disable();
 
 		applyCorsPolicy(http);
 
 		http.headers()
-			.frameOptions()
-			.disable();
+				.frameOptions()
+				.disable();
 
 		http.headers()
-			.xssProtection();
+				.xssProtection();
 
 		http.sessionManagement()
-			.sessionCreationPolicy(SessionCreationPolicy.STATELESS);
+				.sessionCreationPolicy(SessionCreationPolicy.STATELESS);
 
 		if (isLocalMode()) {
 			authorizeH2Console(http);
@@ -56,14 +57,14 @@ public class AuthenticationConfig {
 
 		} else {
 			http.headers()
-				.contentSecurityPolicy("script-src 'self'");
+					.contentSecurityPolicy("script-src 'self'");
 		}
 
-//		http.exceptionHandling()
-//			.authenticationEntryPoint(new CustomAuthenticationEntryPoint(om));
-//
-//		http.exceptionHandling()
-//			.accessDeniedHandler(new CustomAccessDeniedHandler(om));
+		http.exceptionHandling()
+				.authenticationEntryPoint(new CustomAuthenticationEntryPoint(om));
+
+		http.exceptionHandling()
+				.accessDeniedHandler(new CustomAccessDeniedHandler(om));
 
 		authorizeLogin(http);
 
@@ -73,11 +74,8 @@ public class AuthenticationConfig {
 
 		authorizeError(http);
 
-		http.authorizeHttpRequests()
-			.anyRequest().denyAll();
-
 		http.addFilterBefore(new CombinedFilter(jwtProvider, om),
-			UsernamePasswordAuthenticationFilter.class);
+				UsernamePasswordAuthenticationFilter.class);
 
 		return http.build();
 	}
@@ -89,73 +87,72 @@ public class AuthenticationConfig {
 
 	private void applyCorsPolicy(HttpSecurity http) throws Exception {
 		http.cors()
-			.configurationSource(request -> {
-				CorsConfiguration corsConfiguration = new CorsConfiguration();
-				corsConfiguration.setAllowedOriginPatterns(Collections.singletonList("*"));
-				corsConfiguration.setAllowedMethods(Arrays.asList("GET", "POST", "PUT", "DELETE"));
-				corsConfiguration.setAllowCredentials(true);
-				corsConfiguration.setAllowedHeaders(Arrays.asList("Authorization", "Cache-Control", "Content-Type"));
-				corsConfiguration.addExposedHeader("Authorization");
-				return corsConfiguration;
-			});
+				.configurationSource(request -> {
+					CorsConfiguration corsConfiguration = new CorsConfiguration();
+					corsConfiguration.setAllowedOrigins(List.of(CORS_ORIGIN));
+					corsConfiguration.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE", "OPTIONS"));
+					corsConfiguration.setAllowedHeaders(List.of("*"));
+					corsConfiguration.addExposedHeader("Authorization");
+					return corsConfiguration;
+				});
 	}
 
 	private void authorizeError(HttpSecurity http) throws Exception {
-		http.authorizeHttpRequests()
-			.antMatchers("/error").permitAll();
+		http.authorizeRequests()
+				.antMatchers("/error").permitAll();
 	}
 
 	private void authorizeSchedule(HttpSecurity http) throws Exception {
-		http.authorizeHttpRequests()
-			.antMatchers(HttpMethod.GET, "/schedule/application/**")
-			.hasRole(RoleType.ROLE_MEMBER.getAuthority())
-			.antMatchers(HttpMethod.PUT, "/schedule/application")
-			.hasRole(RoleType.ROLE_MEMBER.getAuthority())
-			.antMatchers(HttpMethod.GET, "/schedule/fix/month/**")
-			.hasAnyRole(RoleType.ROLE_ADMIN.getAuthority(), RoleType.ROLE_MEMBER.getAuthority())
-			.antMatchers(HttpMethod.GET, "/schedule/fix/day/**")
-			.hasAnyRole(RoleType.ROLE_ADMIN.getAuthority(), RoleType.ROLE_MEMBER.getAuthority())
-			.antMatchers(HttpMethod.GET, "/schedule/remain/week/**")
-			.hasAnyRole(RoleType.ROLE_ADMIN.getAuthority())
-			.antMatchers(HttpMethod.GET, "/schedule/recommend/**")
-			.hasRole(RoleType.ROLE_ADMIN.getAuthority())
-			.antMatchers(HttpMethod.POST, "/schedule/fix/**")
-			.hasRole(RoleType.ROLE_ADMIN.getAuthority())
-			.antMatchers(HttpMethod.GET, "/schedule/status/**")
-			.hasAnyRole(RoleType.ROLE_ADMIN.getAuthority(), RoleType.ROLE_MEMBER.getAuthority())
-			.antMatchers(HttpMethod.POST, "/schedule/worktime")
-			.hasAnyRole(RoleType.ROLE_ADMIN.getAuthority())
-			.antMatchers(HttpMethod.GET, "/schedule/worktime/**")
-			.hasAnyRole(RoleType.ROLE_ADMIN.getAuthority());
+		http.authorizeRequests()
+				.antMatchers(HttpMethod.GET, "/schedule/application/**")
+				.hasRole(RoleType.ROLE_MEMBER.getAuthority())
+				.antMatchers(HttpMethod.PUT, "/schedule/application")
+				.hasRole(RoleType.ROLE_MEMBER.getAuthority())
+				.antMatchers(HttpMethod.GET, "/schedule/fix/month/**")
+				.hasAnyRole(RoleType.ROLE_ADMIN.getAuthority(), RoleType.ROLE_MEMBER.getAuthority())
+				.antMatchers(HttpMethod.GET, "/schedule/fix/day/**")
+				.hasAnyRole(RoleType.ROLE_ADMIN.getAuthority(), RoleType.ROLE_MEMBER.getAuthority())
+				.antMatchers(HttpMethod.GET, "/schedule/remain/week/**")
+				.hasAnyRole(RoleType.ROLE_ADMIN.getAuthority())
+				.antMatchers(HttpMethod.GET, "/schedule/recommend/**")
+				.hasRole(RoleType.ROLE_ADMIN.getAuthority())
+				.antMatchers(HttpMethod.POST, "/schedule/fix/**")
+				.hasRole(RoleType.ROLE_ADMIN.getAuthority())
+				.antMatchers(HttpMethod.GET, "/schedule/status/**")
+				.hasAnyRole(RoleType.ROLE_ADMIN.getAuthority(), RoleType.ROLE_MEMBER.getAuthority())
+				.antMatchers(HttpMethod.POST, "/schedule/worktime")
+				.hasAnyRole(RoleType.ROLE_ADMIN.getAuthority())
+				.antMatchers(HttpMethod.GET, "/schedule/worktime/**")
+				.hasAnyRole(RoleType.ROLE_ADMIN.getAuthority());
 	}
 
 	private void authorizeGroup(HttpSecurity http) throws Exception {
-		http.authorizeHttpRequests()
-			.antMatchers(HttpMethod.POST, "/group")
-			.hasRole(RoleType.ROLE_ADMIN.getAuthority())
-			.antMatchers(HttpMethod.GET, "/group")
-			.hasAnyRole(RoleType.ROLE_ADMIN.getAuthority(), RoleType.ROLE_MEMBER.getAuthority())
-			.antMatchers(HttpMethod.GET, "/group/invitation")
-			.hasRole(RoleType.ROLE_ADMIN.getAuthority())
-			.antMatchers(HttpMethod.POST, "/group/invitation")
-			.hasRole(RoleType.ROLE_MEMBER.getAuthority())
-			.antMatchers(HttpMethod.GET, "/group/invitation/information/**")
-			.hasRole(RoleType.ROLE_MEMBER.getAuthority());
+		http.authorizeRequests()
+				.antMatchers(HttpMethod.POST, "/group")
+				.hasRole(RoleType.ROLE_ADMIN.getAuthority())
+				.antMatchers(HttpMethod.GET, "/group")
+				.hasAnyRole(RoleType.ROLE_ADMIN.getAuthority(), RoleType.ROLE_MEMBER.getAuthority())
+				.antMatchers(HttpMethod.GET, "/group/invitation")
+				.hasRole(RoleType.ROLE_ADMIN.getAuthority())
+				.antMatchers(HttpMethod.POST, "/group/invitation")
+				.hasRole(RoleType.ROLE_MEMBER.getAuthority())
+				.antMatchers(HttpMethod.GET, "/group/invitation/information/**")
+				.hasRole(RoleType.ROLE_MEMBER.getAuthority());
 	}
 
 	private void authorizeLogin(HttpSecurity http) throws Exception {
-		http.authorizeHttpRequests()
-			.antMatchers("/login/kakao").permitAll()
-			.antMatchers("/auth/**").permitAll();
+		http.authorizeRequests()
+				.antMatchers("/login/kakao").permitAll()
+				.antMatchers("/auth/**").permitAll();
 	}
 
 	private void authorizeApiAndDocs(HttpSecurity http) throws Exception {
-		http.authorizeHttpRequests()
-			.antMatchers("/api/**", "/swagger-ui/**", "/v3/api-docs/**", "/swagger-resources/**").permitAll();
+		http.authorizeRequests()
+				.antMatchers("/api/**", "/swagger-ui/**", "/v3/api-docs/**", "/swagger-resources/**").permitAll();
 	}
 
 	private void authorizeH2Console(HttpSecurity http) throws Exception {
-		http.authorizeHttpRequests()
-			.antMatchers("/h2-console/**").permitAll();
+		http.authorizeRequests()
+				.antMatchers("/h2-console/**").permitAll();
 	}
 }
