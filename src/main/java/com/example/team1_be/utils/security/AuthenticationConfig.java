@@ -1,5 +1,7 @@
 package com.example.team1_be.utils.security;
 
+import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Value;
@@ -89,10 +91,10 @@ public class AuthenticationConfig {
 		http.cors()
 				.configurationSource(request -> {
 					CorsConfiguration corsConfiguration = new CorsConfiguration();
-					corsConfiguration.setAllowedOrigins(List.of(CORS_ORIGIN));
-					corsConfiguration.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE", "OPTIONS"));
-					corsConfiguration.setAllowedHeaders(List.of("*"));
-					corsConfiguration.addExposedHeader("Authorization");
+					corsConfiguration.setAllowedOriginPatterns(Collections.singletonList("*"));
+					corsConfiguration.setAllowedMethods(Arrays.asList("GET", "POST", "PUT", "DELETE"));
+					corsConfiguration.setAllowCredentials(true);
+					corsConfiguration.setAllowedHeaders(Arrays.asList("Authorization", "Cache-Control", "Content-Type"));
 					return corsConfiguration;
 				});
 	}
