@@ -70,7 +70,7 @@ public class AuthenticationConfig {
 
         authorizeError(http);
 
-        http.authorizeHttpRequests()
+        http.authorizeRequests()
                 .anyRequest()
                 .denyAll();
 
