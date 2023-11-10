@@ -1,5 +1,6 @@
 package com.example.team1_be.utils.security.auth.kakao;
 
+import lombok.extern.slf4j.Slf4j;
 import org.apache.http.HttpHost;
 import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.impl.client.HttpClients;
@@ -20,6 +21,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 
 import lombok.RequiredArgsConstructor;
 
+@Slf4j
 @Component
 @RequiredArgsConstructor
 public class KakaoOAuth {
@@ -66,14 +68,14 @@ public class KakaoOAuth {
 	}
 
 	public <T> T executeRequest(String url, HttpMethod method, HttpHeaders headers, MultiValueMap<String, String> body,
-		Class<T> clazz) throws JsonProcessingException {
+								Class<T> clazz) throws JsonProcessingException {
 
 		RestTemplate rt;
 		if (!isLocalMode()) {
 			HttpHost proxy = new HttpHost(PROXY_HOST_NAME, Integer.parseInt(PROXY_PORT));
 			CloseableHttpClient httpClient = HttpClients.custom()
-				.setProxy(proxy)
-				.build();
+					.setProxy(proxy)
+					.build();
 
 			HttpComponentsClientHttpRequestFactory factory = new HttpComponentsClientHttpRequestFactory(httpClient);
 			factory.setConnectionRequestTimeout(360000);
@@ -93,11 +95,20 @@ public class KakaoOAuth {
 			requestEntity = new HttpEntity<>(headers);
 		}
 
-		ResponseEntity<String> response = rt.exchange(url, method, requestEntity, String.class);
+		log.info("Sending {} request to {}", method, url);
+		if (body != null) {
+			log.info("Request body: {}", body);
+		}
 
-		ObjectMapper om = new ObjectMapper();
-
-		return om.readValue(response.getBody(), clazz);
+		try {
+			ResponseEntity<String> response = rt.exchange(url, method, requestEntity, String.class);
+			log.info("Received response with status code {}", response.getStatusCode());
+			ObjectMapper om = new ObjectMapper();
+			return om.readValue(response.getBody(), clazz);
+		} catch (Exception e) {
+			log.error("Request to {} failed with error: {}", url, e.getMessage(), e);
+			throw e;
+		}
 	}
 
 	private boolean isLocalMode() {
