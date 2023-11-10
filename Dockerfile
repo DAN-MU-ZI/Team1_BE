@@ -8,4 +8,4 @@ RUN echo "systemProp.http.proxyHost=krmp-proxy.9rum.cc\nsystemProp.http.proxyPor
 
 RUN ./gradlew clean build
 
-ls -al /home/gradle/project/build/libs/
+RUN ls -al /home/gradle/project/build/libs/
