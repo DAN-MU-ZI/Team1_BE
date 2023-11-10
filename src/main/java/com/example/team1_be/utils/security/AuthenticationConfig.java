@@ -71,11 +71,8 @@ public class AuthenticationConfig {
                     .contentSecurityPolicy("script-src 'self'");
         }
 
-        http.exceptionHandling()
-                .authenticationEntryPoint(new CustomAuthenticationEntryPoint(om));
-
-        http.exceptionHandling()
-                .accessDeniedHandler(new CustomAccessDeniedHandler(om));
+        http.authorizeHttpRequests()
+                        .antMatchers("/**").permitAll();
 
         authorizeLogin(http);
 
@@ -87,6 +84,12 @@ public class AuthenticationConfig {
 
         http.authorizeHttpRequests()
                 .anyRequest().denyAll();
+
+        http.exceptionHandling()
+                .authenticationEntryPoint(new CustomAuthenticationEntryPoint(om));
+
+        http.exceptionHandling()
+                .accessDeniedHandler(new CustomAccessDeniedHandler(om));
 
         http.addFilterBefore(new JwtAuthenticationFilter(jwtProvider),
                 UsernamePasswordAuthenticationFilter.class);
