@@ -6,6 +6,7 @@ COPY . .
 
 RUN echo "systemProp.http.proxyHost=krmp-proxy.9rum.cc\nsystemProp.http.proxyPort=3128\nsystemProp.https.proxyHost=krmp-proxy.9rum.cc\nsystemProp.https.proxyPort=3128" > /root/.gradle/gradle.properties
 
-RUN pwd
+RUN ./gradlew clean build
 
-RUN ls -al /home/gradle/project/build/libs/
+# 빌드 결과 jar 파일을 실행
+CMD ["java", "-jar", "-Dspring.profiles.active=prod", "/home/gradle/project/build/libs/team1_be-1.0.jar"]
