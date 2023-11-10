@@ -89,7 +89,7 @@ public class AuthenticationConfig {
 		http.cors()
 			.configurationSource(request -> {
 				CorsConfiguration corsConfiguration = new CorsConfiguration();
-				corsConfiguration.setAllowedOrigins(List.of(CORS_ORIGIN));
+				corsConfiguration.setAllowedOrigins(List.of("*"));
 				corsConfiguration.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE", "OPTIONS"));
 				corsConfiguration.setAllowedHeaders(List.of("*"));
 				corsConfiguration.addExposedHeader("Authorization");
