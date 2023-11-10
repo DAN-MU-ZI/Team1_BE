@@ -74,16 +74,16 @@ public class AuthenticationConfig {
         http.authorizeHttpRequests()
                         .antMatchers("/**").permitAll();
 
-        authorizeLogin(http);
-
-        authorizeGroup(http);
-
-        authorizeSchedule(http);
-
-        authorizeError(http);
-
-        http.authorizeHttpRequests()
-                .anyRequest().denyAll();
+//        authorizeLogin(http);
+//
+//        authorizeGroup(http);
+//
+//        authorizeSchedule(http);
+//
+//        authorizeError(http);
+//
+//        http.authorizeHttpRequests()
+//                .anyRequest().denyAll();
 
         http.exceptionHandling()
                 .authenticationEntryPoint(new CustomAuthenticationEntryPoint(om));
