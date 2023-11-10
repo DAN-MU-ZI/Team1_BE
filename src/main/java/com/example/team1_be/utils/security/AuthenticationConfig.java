@@ -95,7 +95,7 @@ public class AuthenticationConfig {
                     corsConfiguration.setAllowCredentials(true);
                     corsConfiguration.setAllowedHeaders(
                             Arrays.asList("Authorization", "Cache-Control", "Content-Type"));
-                    corsConfiguration.addExposedHeader("Authorization");
+                    corsConfiguration.setExposedHeaders(Arrays.asList("Authorization"));
                     return corsConfiguration;
                 });
     }
