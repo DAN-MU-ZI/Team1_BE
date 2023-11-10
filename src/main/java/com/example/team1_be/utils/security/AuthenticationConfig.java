@@ -42,7 +42,15 @@ public class AuthenticationConfig {
         http.csrf()
                 .disable();
 
-        applyCorsPolicy(http);
+        http.cors()
+                .configurationSource(request -> {
+                    CorsConfiguration corsConfiguration = new CorsConfiguration();
+                    corsConfiguration.setAllowedOrigins(List.of("*"));
+                    corsConfiguration.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE", "OPTIONS"));
+                    corsConfiguration.setAllowedHeaders(List.of("*"));
+                    corsConfiguration.addExposedHeader("Authorization");
+                    return corsConfiguration;
+                });
 
         http.headers()
                 .frameOptions()
