@@ -1,17 +1,14 @@
 package com.example.team1_be.utils.security.auth.UserDetails;
 
-import java.util.ArrayList;
-import java.util.Collection;
-
-import org.springframework.security.core.GrantedAuthority;
-import org.springframework.security.core.authority.SimpleGrantedAuthority;
-import org.springframework.security.core.userdetails.UserDetails;
-
 import com.example.team1_be.domain.User.Role.Role;
 import com.example.team1_be.domain.User.Role.RoleType;
 import com.example.team1_be.domain.User.User;
-
+import java.util.ArrayList;
+import java.util.Collection;
 import lombok.Getter;
+import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
+import org.springframework.security.core.userdetails.UserDetails;
 
 @Getter
 public class CustomUserDetails implements UserDetails {
