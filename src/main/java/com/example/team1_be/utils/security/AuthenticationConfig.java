@@ -5,6 +5,8 @@ import com.example.team1_be.utils.security.auth.CustomAccessDeniedHandler;
 import com.example.team1_be.utils.security.auth.CustomAuthenticationEntryPoint;
 import com.example.team1_be.utils.security.auth.jwt.JwtProvider;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
@@ -89,10 +91,10 @@ public class AuthenticationConfig {
 		http.cors()
 			.configurationSource(request -> {
 				CorsConfiguration corsConfiguration = new CorsConfiguration();
-				corsConfiguration.setAllowedOrigins(List.of("*"));
-				corsConfiguration.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE", "OPTIONS"));
-				corsConfiguration.setAllowedHeaders(List.of("*"));
+				corsConfiguration.setAllowedOriginPatterns(Collections.singletonList("*"));
+				corsConfiguration.setAllowedMethods(Arrays.asList("GET", "POST", "PUT", "DELETE"));
 				corsConfiguration.setAllowCredentials(true);
+				corsConfiguration.setAllowedHeaders(Arrays.asList("Authorization", "Cache-Control", "Content-Type"));
 				corsConfiguration.addExposedHeader("Authorization");
 				return corsConfiguration;
 			});
