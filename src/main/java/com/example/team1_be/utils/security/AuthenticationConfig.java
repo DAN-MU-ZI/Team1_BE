@@ -10,15 +10,12 @@ import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.web.SecurityFilterChain;
-import org.springframework.security.web.access.channel.ChannelProcessingFilter;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import org.springframework.web.cors.CorsConfiguration;
 
 import com.example.team1_be.domain.User.Role.RoleType;
-import com.example.team1_be.utils.security.XSS.XSSProtectFilter;
 import com.example.team1_be.utils.security.auth.CustomAccessDeniedHandler;
 import com.example.team1_be.utils.security.auth.CustomAuthenticationEntryPoint;
-import com.example.team1_be.utils.security.auth.jwt.JwtAuthenticationFilter;
 import com.example.team1_be.utils.security.auth.jwt.JwtProvider;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
@@ -100,27 +97,11 @@ public class AuthenticationConfig {
         return http.build();
     }
 
-    private boolean isLocalMode() {
-        String profile = env.getActiveProfiles().length > 0 ? env.getActiveProfiles()[0] : "local";
-        return profile.equals("local");
-    }
+		http.addFilterBefore(new CombinedFilter(jwtProvider, om),
+			UsernamePasswordAuthenticationFilter.class);
 
-    private void applyCorsPolicy(HttpSecurity http) throws Exception {
-        http.cors()
-                .configurationSource(request -> {
-                    CorsConfiguration corsConfiguration = new CorsConfiguration();
-                    corsConfiguration.setAllowedOrigins(List.of("*"));
-                    corsConfiguration.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE", "OPTIONS"));
-                    corsConfiguration.setAllowedHeaders(List.of("*"));
-                    corsConfiguration.addExposedHeader("Authorization");
-                    return corsConfiguration;
-                });
-    }
-
-    private void authorizeError(HttpSecurity http) throws Exception {
-        http.authorizeHttpRequests()
-                .antMatchers("/error").permitAll();
-    }
+		return http.build();
+	}
 
     private void authorizeSchedule(HttpSecurity http) throws Exception {
         http.authorizeHttpRequests()
