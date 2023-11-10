@@ -47,6 +47,7 @@ public class UserController {
 			log.info("아이디 조회");
 			kakaoId = kakaoOAuthProfile.getId();
 		} catch (Exception e) {
+			log.error(e.getMessage());
 			throw new ServerErrorException("code가 만료되었거나 유효하지 않습니다.", ClientErrorCode.KAKAO_CONNECT_FAIL);
 		}
 
