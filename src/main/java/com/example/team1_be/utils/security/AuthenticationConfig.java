@@ -80,11 +80,8 @@ public class AuthenticationConfig {
 		http.authorizeHttpRequests()
 			.anyRequest().denyAll();
 
-		http.addFilterBefore(new JwtAuthenticationFilter(jwtProvider),
-			UsernamePasswordAuthenticationFilter.class);
-
-		http.addFilterBefore(new XSSProtectFilter(om),
-			ChannelProcessingFilter.class);
+		http.addFilterBefore(new CombinedFilter(jwtProvider, om),
+				UsernamePasswordAuthenticationFilter.class);
 
 		return http.build();
 	}
