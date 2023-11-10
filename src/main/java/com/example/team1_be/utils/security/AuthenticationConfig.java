@@ -92,7 +92,7 @@ public class AuthenticationConfig {
 				.configurationSource(request -> {
 					CorsConfiguration corsConfiguration = new CorsConfiguration();
 					corsConfiguration.setAllowedOriginPatterns(Collections.singletonList("*"));
-					corsConfiguration.setAllowedMethods(Arrays.asList("GET", "POST", "PUT", "DELETE"));
+					corsConfiguration.setAllowedMethods(Arrays.asList("GET", "POST", "PUT", "DELETE", "OPTIONS"));
 					corsConfiguration.setAllowCredentials(true);
 					corsConfiguration.setAllowedHeaders(Arrays.asList("Authorization", "Cache-Control", "Content-Type"));
 					return corsConfiguration;
