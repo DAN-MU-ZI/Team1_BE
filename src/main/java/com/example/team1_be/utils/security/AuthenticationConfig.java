@@ -92,6 +92,7 @@ public class AuthenticationConfig {
 				corsConfiguration.setAllowedOrigins(List.of("*"));
 				corsConfiguration.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE", "OPTIONS"));
 				corsConfiguration.setAllowedHeaders(List.of("*"));
+				corsConfiguration.setAllowCredentials(true);
 				corsConfiguration.addExposedHeader("Authorization");
 				return corsConfiguration;
 			});
