@@ -10,5 +10,7 @@ RUN chmod +x ./gradlew
 
 RUN ./gradlew clean build
 
+RUN ls -l /home/gradle/project/build/libs
+
 # 빌드 결과 jar 파일을 실행
 CMD ["java", "-jar", "-Dspring.profiles.active=prod", "/home/gradle/project/build/libs/team1_be-1.0.jar"]
