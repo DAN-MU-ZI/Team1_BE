@@ -98,7 +98,7 @@ public class ScheduleController {
 
 		GetFixedWeeklySchedule.Response responseDTO;
 
-		if (null == userId) {
+		if (0 == userId) {
 			responseDTO = scheduleService.getPersonalWeeklyFixedSchedule(userDetails.getUser(),
 					requestMonth);
 		} else {
