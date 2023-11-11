@@ -28,9 +28,9 @@ public class KakaoOAuth {
 	private String CLIENT_ID;
 	@Value("${kakao.redirectURI}")
 	private String REDIRECT_URI;
-	@Value("${krampoline.proxy.hostName")
+	@Value("${krampoline.proxy.hostName}")
 	private String PROXY_HOST_NAME;
-	@Value("${krampoline.proxy.port")
+	@Value("${krampoline.proxy.port}")
 	private String PROXY_PORT;
 
 	public KakaoOAuthToken getToken(String code) throws JsonProcessingException {
