@@ -93,7 +93,7 @@ public class ScheduleController {
 	@GetMapping("/fix/month")
 	public ResponseEntity<ApiUtils.ApiResult<GetFixedWeeklySchedule.Response>> getFixedWeeklySchedule(
 		@AuthenticationPrincipal CustomUserDetails userDetails,
-		@RequestParam("requestMonth") @DateTimeFormat(pattern = "yyyy-MM") YearMonth requestMonth,
+		@RequestParam("month") @DateTimeFormat(pattern = "yyyy-MM") YearMonth requestMonth,
 		@RequestParam(value = "memberId", required = false) Long memberId) {
 
 		GetFixedWeeklySchedule.Response responseDTO;

@@ -108,7 +108,7 @@ class ScheduleControllerTest {
 		YearMonth month = YearMonth.parse("2023-10");
 		Long memberId = 2L;
 		ResultActions perform = mvc.perform(
-			get(String.format("/api/schedule/fix/month?requestMonth=%s&memberId=%s", month, memberId)));
+			get(String.format("/api/schedule/fix/month?month=%s&memberId=%s", month, memberId)));
 		perform.andExpect(status().isOk());
 		perform.andDo(print());
 	}
@@ -119,7 +119,7 @@ class ScheduleControllerTest {
 	void shouldFailToRetrieveFixedWeeklyScheduleDueToParameterError() throws Exception {
 		Long memberId = 2L;
 		ResultActions perform = mvc.perform(
-			get(String.format("/api/schedule/fix/month?requestMonth=%s&memberId=%s", "2023", memberId)));
+			get(String.format("/api/schedule/fix/month?month=%s&memberId=%s", "2023", memberId)));
 		perform.andExpect(status().isBadRequest());
 		perform.andDo(print());
 	}
