@@ -33,62 +33,90 @@ public class AuthenticationConfig {
     @Value("${cors.origin}")
     private String CORS_ORIGIN;
 
-    @Bean
-    public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
-        http.httpBasic()
-                .disable();
+        @Bean
+        public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
+                http
+                        .httpBasic()
+                        .disable()
+                        .csrf()
+                        .disable()
+                        .cors()
+                        .configurationSource(request -> {
+                                CorsConfiguration corsConfiguration = new CorsConfiguration();
+                                corsConfiguration.setAllowedOrigins(List.of(CORS_ORIGIN));
+                                corsConfiguration.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE", "OPTIONS"));
+                                corsConfiguration.setAllowedHeaders(List.of("*"));
+                                corsConfiguration.addExposedHeader("Authorization");
+                                return corsConfiguration;
+                        })
+                        .and()
+                        .headers()
+                        .frameOptions()
+                        .disable()
+                        .and()
 
-        http.csrf()
-                .disable();
+                        .sessionManagement()
+                        .sessionCreationPolicy(SessionCreationPolicy.STATELESS)
+                        .and()
 
-        applyCorsPolicy(http);
+                        .authorizeRequests()
+                        .antMatchers("/api/h2-console/**")
+                        .permitAll()
+                        .antMatchers("/api/api/**", "/api/swagger-ui/**", "/api/v3/api-docs/**", "/api/swagger-resources/**")
+                        .permitAll()
+                        .antMatchers("/api/login/kakao")
+                        .permitAll()
+                        .antMatchers("/api/auth/**")
+                        .permitAll()
+                        .antMatchers(HttpMethod.POST, "/api/group")
+                        .hasRole(RoleType.ROLE_ADMIN.getAuth())
+                        .antMatchers(HttpMethod.GET, "/api/group")
+                        .hasAnyRole(RoleType.ROLE_ADMIN.getAuth(), RoleType.ROLE_MEMBER.getAuth())
+                        .antMatchers(HttpMethod.GET, "/api/group/invitation")
+                        .hasRole(RoleType.ROLE_ADMIN.getAuth())
+                        .antMatchers(HttpMethod.POST, "/api/group/invitation")
+                        .hasRole(RoleType.ROLE_MEMBER.getAuth())
+                        .antMatchers(HttpMethod.GET, "/api/group/invitation/information/**")
+                        .hasRole(RoleType.ROLE_MEMBER.getAuth())
+                        .antMatchers(HttpMethod.GET, "/api/schedule/application/**")
+                        .hasRole(RoleType.ROLE_MEMBER.getAuth())
+                        .antMatchers(HttpMethod.PUT, "/api/schedule/application")
+                        .hasRole(RoleType.ROLE_MEMBER.getAuth())
+                        .antMatchers(HttpMethod.GET, "/api/schedule/fix/month/**")
+                        .hasAnyRole(RoleType.ROLE_ADMIN.getAuth(), RoleType.ROLE_MEMBER.getAuth())
+                        .antMatchers(HttpMethod.GET, "/api/schedule/fix/day/**")
+                        .hasAnyRole(RoleType.ROLE_ADMIN.getAuth(), RoleType.ROLE_MEMBER.getAuth())
+                        .antMatchers(HttpMethod.GET, "/api/schedule/remain/week/**")
+                        .hasAnyRole(RoleType.ROLE_ADMIN.getAuth())
+                        .antMatchers(HttpMethod.GET, "/api/schedule/recommend/**")
+                        .hasRole(RoleType.ROLE_ADMIN.getAuth())
+                        .antMatchers(HttpMethod.POST, "/api/schedule/fix/**")
+                        .hasRole(RoleType.ROLE_ADMIN.getAuth())
+                        .antMatchers(HttpMethod.GET, "/api/schedule/status/**")
+                        .hasAnyRole(RoleType.ROLE_ADMIN.getAuth(), RoleType.ROLE_MEMBER.getAuth())
+                        .antMatchers(HttpMethod.POST, "/api/schedule/worktime")
+                        .hasAnyRole(RoleType.ROLE_ADMIN.getAuth())
+                        .antMatchers(HttpMethod.GET, "/api/schedule/worktime/**")
+                        .hasAnyRole(RoleType.ROLE_ADMIN.getAuth())
+                        .antMatchers("/error")
+                        .permitAll()
+                        .anyRequest()
+                        .denyAll()
+                        .and()
+                        .addFilterBefore(new CombinedFilter(jwtProvider, om),
+                                UsernamePasswordAuthenticationFilter.class);
 
-        http.headers()
-                .frameOptions()
-                .disable();
-
-        http.headers()
-                .xssProtection();
-
-        http.sessionManagement()
-                .sessionCreationPolicy(SessionCreationPolicy.STATELESS);
-
-        if (isLocalMode()) {
-            authorizeH2Console(http);
-            authorizeApiAndDocs(http);
-
-        } else {
-            http.headers()
-                    .contentSecurityPolicy("script-src 'self'");
-        }
+                if (!isLocalMode()) {
+                        http.headers()
+                                .contentSecurityPolicy("script-src 'self'");
+                }
 
         authorizeLogin(http);
 
         authorizeGroup(http);
 
-        authorizeSchedule(http);
-
-        authorizeError(http);
-
-//        http.authorizeRequests()
-//                .anyRequest()
-//                .denyAll();
-
-        http.addFilterBefore(new CombinedFilter(jwtProvider, om),
-                UsernamePasswordAuthenticationFilter.class);
-
-        http.exceptionHandling()
-                .authenticationEntryPoint(new CustomAuthenticationEntryPoint(om));
-
-        http.exceptionHandling()
-                .accessDeniedHandler(new CustomAccessDeniedHandler(om));
-        return http.build();
-    }
-
-    private boolean isLocalMode() {
-        String profile = env.getActiveProfiles().length > 0 ? env.getActiveProfiles()[0] : "local";
-        return profile.equals("local");
-    }
+                return http.build();
+        }
 
     private void applyCorsPolicy(HttpSecurity http) throws Exception {
         http.cors()
@@ -104,62 +132,4 @@ public class AuthenticationConfig {
                 });
     }
 
-    private void authorizeError(HttpSecurity http) throws Exception {
-        http.authorizeRequests()
-                .antMatchers("/error").permitAll();
-    }
-
-    private void authorizeSchedule(HttpSecurity http) throws Exception {
-        http.authorizeRequests()
-                .antMatchers(HttpMethod.GET, "/schedule/application/**")
-                .hasRole(RoleType.ROLE_MEMBER.getAuthority())
-                .antMatchers(HttpMethod.PUT, "/schedule/application")
-                .hasRole(RoleType.ROLE_MEMBER.getAuthority())
-                .antMatchers(HttpMethod.GET, "/schedule/fix/month/**")
-                .hasAnyRole(RoleType.ROLE_ADMIN.getAuthority(), RoleType.ROLE_MEMBER.getAuthority())
-                .antMatchers(HttpMethod.GET, "/schedule/fix/day/**")
-                .hasAnyRole(RoleType.ROLE_ADMIN.getAuthority(), RoleType.ROLE_MEMBER.getAuthority())
-                .antMatchers(HttpMethod.GET, "/schedule/remain/week/**")
-                .hasAnyRole(RoleType.ROLE_ADMIN.getAuthority())
-                .antMatchers(HttpMethod.GET, "/schedule/recommend/**")
-                .hasRole(RoleType.ROLE_ADMIN.getAuthority())
-                .antMatchers(HttpMethod.POST, "/schedule/fix/**")
-                .hasRole(RoleType.ROLE_ADMIN.getAuthority())
-                .antMatchers(HttpMethod.GET, "/schedule/status/**")
-                .hasAnyRole(RoleType.ROLE_ADMIN.getAuthority(), RoleType.ROLE_MEMBER.getAuthority())
-                .antMatchers(HttpMethod.POST, "/schedule/worktime")
-                .hasAnyRole(RoleType.ROLE_ADMIN.getAuthority())
-                .antMatchers(HttpMethod.GET, "/schedule/worktime/**")
-                .hasAnyRole(RoleType.ROLE_ADMIN.getAuthority());
-    }
-
-    private void authorizeGroup(HttpSecurity http) throws Exception {
-        http.authorizeRequests()
-                .antMatchers(HttpMethod.GET, "/group/invitation/information/**")
-                .hasRole(RoleType.ROLE_MEMBER.getAuthority())
-                .antMatchers(HttpMethod.GET, "/group/invitation")
-                .hasRole(RoleType.ROLE_ADMIN.getAuthority())
-                .antMatchers(HttpMethod.POST, "/group/invitation")
-                .hasRole(RoleType.ROLE_MEMBER.getAuthority())
-                .antMatchers(HttpMethod.POST, "/group")
-                .hasRole(RoleType.ROLE_ADMIN.getAuthority())
-                .antMatchers(HttpMethod.GET, "/group")
-                .hasAnyRole(RoleType.ROLE_ADMIN.getAuthority(), RoleType.ROLE_MEMBER.getAuthority());
-    }
-
-    private void authorizeLogin(HttpSecurity http) throws Exception {
-        http.authorizeRequests()
-                .antMatchers("/login/kakao").permitAll()
-                .antMatchers("/auth/**").permitAll();
-    }
-
-    private void authorizeApiAndDocs(HttpSecurity http) throws Exception {
-        http.authorizeRequests()
-                .antMatchers("/api/**", "/swagger-ui/**", "/v3/api-docs/**", "/swagger-resources/**").permitAll();
-    }
-
-    private void authorizeH2Console(HttpSecurity http) throws Exception {
-        http.authorizeRequests()
-                .antMatchers("/h2-console/**").permitAll();
-    }
 }
