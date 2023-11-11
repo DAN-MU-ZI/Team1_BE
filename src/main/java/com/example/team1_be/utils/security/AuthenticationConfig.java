@@ -1,7 +1,5 @@
 package com.example.team1_be.utils.security;
 
-import java.util.Arrays;
-import java.util.Collections;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Value;
@@ -110,25 +108,19 @@ public class AuthenticationConfig {
             http.headers()
                     .contentSecurityPolicy("script-src 'self'");
         }
-        return http.build();
-    }
 
-    private void applyCorsPolicy(HttpSecurity http) throws Exception {
-        http.cors()
-                .configurationSource(request -> {
-                    CorsConfiguration corsConfiguration = new CorsConfiguration();
-                    corsConfiguration.setAllowedOriginPatterns(Collections.singletonList("*"));
-                    corsConfiguration.setAllowedMethods(Arrays.asList("GET", "POST", "PUT", "DELETE", "OPTIONS"));
-                    corsConfiguration.setAllowCredentials(true);
-                    corsConfiguration.setAllowedHeaders(
-                            Arrays.asList("Authorization", "Cache-Control", "Content-Type"));
-                    corsConfiguration.setExposedHeaders(Arrays.asList("Authorization"));
-                    return corsConfiguration;
-                });
+        http.exceptionHandling()
+                .authenticationEntryPoint(new CustomAuthenticationEntryPoint(om));
+
+        http.exceptionHandling()
+                .accessDeniedHandler(new CustomAccessDeniedHandler(om));
+
+        return http.build();
     }
 
     private boolean isLocalMode() {
         String profile = env.getActiveProfiles().length > 0 ? env.getActiveProfiles()[0] : "local";
         return profile.equals("local");
     }
+
 }
