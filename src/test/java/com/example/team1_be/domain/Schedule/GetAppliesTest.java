@@ -42,7 +42,7 @@ public class GetAppliesTest {
 	@Test
 	void shouldRetrieveScheduleApplicationSuccessfully() throws Exception {
 		LocalDate startWeekDate = LocalDate.parse("2023-10-16");
-		String URL = String.format("/api/schedule/application/%s", startWeekDate);
+		String URL = String.format("/api/schedule/application?startWeekDate=%s", startWeekDate);
 		ResultActions perform = mvc.perform(get(URL));
 		perform.andExpect(status().isOk());
 		perform.andDo(print());

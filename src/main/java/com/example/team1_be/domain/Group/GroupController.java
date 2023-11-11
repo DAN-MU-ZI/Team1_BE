@@ -9,6 +9,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.example.team1_be.domain.Group.DTO.Create;
@@ -40,10 +41,10 @@ public class GroupController {
 		return ResponseEntity.ok(response);
 	}
 
-	@GetMapping("/invitation/information/{invitationKey}")
+	@GetMapping("/invitation/information")
 	public ResponseEntity<ApiUtils.ApiResult<InvitationCheck.Response>> invitationCheck(
 		@AuthenticationPrincipal CustomUserDetails userDetails,
-		@PathVariable("invitationKey") String invitationKey) {
+		@RequestParam("invitationKey") String invitationKey) {
 
 		InvitationCheck.Response responseDTO = inviteService.checkInvitation(invitationKey);
 		ApiUtils.ApiResult<InvitationCheck.Response> response = ApiUtils.success(responseDTO);

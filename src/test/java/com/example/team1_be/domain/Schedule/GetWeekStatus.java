@@ -36,7 +36,7 @@ public class GetWeekStatus {
 
 		// when
 		ResultActions perform = mvc.perform(
-			get(String.format("/api/schedule/status/%s", startDate)));
+			get(String.format("/api/schedule/status?startWeekDate=%s", startDate)));
 
 		// then
 		perform.andExpect(status().isOk());
@@ -52,7 +52,7 @@ public class GetWeekStatus {
 
 		// when
 		ResultActions perform = mvc.perform(
-			get(String.format("/api/schedule/status/%s", startDate)));
+			get(String.format("/api/schedule/status?startWeekDate=%s", startDate)));
 
 		// then
 		perform.andExpect(status().isOk());
@@ -68,7 +68,7 @@ public class GetWeekStatus {
 
 		// when
 		ResultActions perform = mvc.perform(
-			get(String.format("/api/schedule/status/%s", startDate)));
+			get(String.format("/api/schedule/status?startWeekDate=%s", startDate)));
 
 		// then
 		perform.andExpect(status().isOk());

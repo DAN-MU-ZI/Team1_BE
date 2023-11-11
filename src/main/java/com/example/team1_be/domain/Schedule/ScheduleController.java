@@ -10,7 +10,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -48,10 +48,10 @@ public class ScheduleController {
 		return ResponseEntity.ok(result);
 	}
 
-	@GetMapping("/worktime/{startWeekDate}")
+	@GetMapping("/worktime")
 	public ResponseEntity<ApiUtils.ApiResult<LoadLatestSchedule.Response>> loadLatestSchedule(
 		@AuthenticationPrincipal CustomUserDetails userDetails,
-		@PathVariable("startWeekDate") @DateTimeFormat(pattern = "yyyy-MM-dd") LocalDate startWeekDate) {
+		@RequestParam("startWeekDate") @DateTimeFormat(pattern = "yyyy-MM-dd") LocalDate startWeekDate) {
 
 		LoadLatestSchedule.Response responseDTO = scheduleService.loadLatestSchedule(userDetails.getUser(),
 			startWeekDate);
@@ -59,10 +59,10 @@ public class ScheduleController {
 		return ResponseEntity.ok(result);
 	}
 
-	@GetMapping("/remain/week/{startWeekDate}")
+	@GetMapping("/remain/week")
 	public ResponseEntity<ApiUtils.ApiResult<WeeklyScheduleCheck.Response>> weeklyScheduleCheck(
 		@AuthenticationPrincipal CustomUserDetails userDetails,
-		@PathVariable("startWeekDate") @DateTimeFormat(pattern = "yyyy-MM-dd") LocalDate startWeekDate) {
+		@RequestParam("startWeekDate") @DateTimeFormat(pattern = "yyyy-MM-dd") LocalDate startWeekDate) {
 
 		WeeklyScheduleCheck.Response responseDTO = scheduleService.weeklyScheduleCheck(userDetails.getUser(),
 			startWeekDate);
@@ -70,10 +70,10 @@ public class ScheduleController {
 		return ResponseEntity.ok(response);
 	}
 
-	@GetMapping("/recommend/{weekStartDate}")
+	@GetMapping("/recommend")
 	public ResponseEntity<ApiUtils.ApiResult<RecommendSchedule.Response>> recommendSchedule(
 		@AuthenticationPrincipal CustomUserDetails userDetails,
-		@PathVariable("weekStartDate") @DateTimeFormat(pattern = "yyyy-MM-dd") LocalDate date) {
+		@RequestParam("weekStartDate") @DateTimeFormat(pattern = "yyyy-MM-dd") LocalDate date) {
 
 		RecommendSchedule.Response responseDTO = scheduleService.recommendSchedule(userDetails.getUser(), date);
 		ApiUtils.ApiResult<RecommendSchedule.Response> response = ApiUtils.success(responseDTO);
@@ -90,34 +90,29 @@ public class ScheduleController {
 		return ResponseEntity.ok(response);
 	}
 
-	@GetMapping("/fix/month/{requestMonth}")
-	public ResponseEntity<ApiUtils.ApiResult<GetFixedWeeklySchedule.Response>> getUsersFixedWeeklySchedule(
-		@AuthenticationPrincipal CustomUserDetails userDetails,
-		@PathVariable("requestMonth") @DateTimeFormat(pattern = "yyyy-MM") YearMonth requestMonth) {
-
-		GetFixedWeeklySchedule.Response responseDTO = scheduleService.getPersonalWeeklyFixedSchedule(
-			userDetails.getUser(),
-			requestMonth);
-		ApiUtils.ApiResult<GetFixedWeeklySchedule.Response> response = ApiUtils.success(responseDTO);
-		return ResponseEntity.ok(response);
-	}
-
-	@GetMapping("/fix/month/{requestMonth}/{memberId}")
+	@GetMapping("/fix/month")
 	public ResponseEntity<ApiUtils.ApiResult<GetFixedWeeklySchedule.Response>> getFixedWeeklySchedule(
 		@AuthenticationPrincipal CustomUserDetails userDetails,
-		@PathVariable("requestMonth") @DateTimeFormat(pattern = "yyyy-MM") YearMonth requestMonth,
-		@PathVariable("memberId") Long memberId) {
+		@RequestParam("requestMonth") @DateTimeFormat(pattern = "yyyy-MM") YearMonth requestMonth,
+		@RequestParam(value = "memberId", required = false) Long memberId) {
 
-		GetFixedWeeklySchedule.Response responseDTO = scheduleService.getFixedWeeklySchedule(userDetails.getUser(),
-			requestMonth, memberId);
+		GetFixedWeeklySchedule.Response responseDTO;
+
+		if (null == memberId) {
+			responseDTO = scheduleService.getPersonalWeeklyFixedSchedule(userDetails.getUser(),
+					requestMonth);
+		} else {
+			responseDTO = scheduleService.getFixedWeeklySchedule(userDetails.getUser(),
+					requestMonth, memberId);
+		}
 		ApiUtils.ApiResult<GetFixedWeeklySchedule.Response> response = ApiUtils.success(responseDTO);
 		return ResponseEntity.ok(response);
 	}
 
-	@GetMapping("/fix/day/{selectedDate}")
+	@GetMapping("/fix/day")
 	public ResponseEntity<ApiUtils.ApiResult<GetDailyFixedApplies.Response>> getDailyFixedApplies(
 		@AuthenticationPrincipal CustomUserDetails userDetails,
-		@PathVariable("selectedDate") @DateTimeFormat(pattern = "yyyy-MM-dd") LocalDate selectedDate) {
+		@RequestParam("selectedDate") @DateTimeFormat(pattern = "yyyy-MM-dd") LocalDate selectedDate) {
 
 		GetDailyFixedApplies.Response responseDTO = scheduleService.getDailyFixedApplies(userDetails.getUser(),
 			selectedDate);
@@ -125,20 +120,20 @@ public class ScheduleController {
 		return ResponseEntity.ok(response);
 	}
 
-	@GetMapping("/status/{startWeekDate}")
+	@GetMapping("/status")
 	public ResponseEntity<ApiUtils.ApiResult<GetWeekStatus.Response>> getWeekStatus(
 		@AuthenticationPrincipal CustomUserDetails userDetails,
-		@PathVariable("startWeekDate") @DateTimeFormat(pattern = "yyyy-MM-dd") LocalDate startWeekDate) {
+		@RequestParam("startWeekDate") @DateTimeFormat(pattern = "yyyy-MM-dd") LocalDate startWeekDate) {
 
 		GetWeekStatus.Response responseDTO = scheduleService.getWeekStatus(userDetails.getUser(), startWeekDate);
 		ApiUtils.ApiResult<GetWeekStatus.Response> response = ApiUtils.success(responseDTO);
 		return ResponseEntity.ok(response);
 	}
 
-	@GetMapping("/application/{startWeekDate}")
+	@GetMapping("/application")
 	public ResponseEntity<ApiUtils.ApiResult<GetApplies.Response>> getApplies(
 		@AuthenticationPrincipal CustomUserDetails userDetails,
-		@PathVariable("startWeekDate") @DateTimeFormat(pattern = "yyyy-MM-dd") LocalDate startWeekDate) {
+		@RequestParam("startWeekDate") @DateTimeFormat(pattern = "yyyy-MM-dd") LocalDate startWeekDate) {
 
 		GetApplies.Response responseDTO = scheduleService.getApplies(userDetails.getUser(), startWeekDate);
 		ApiUtils.ApiResult<GetApplies.Response> response = ApiUtils.success(responseDTO);

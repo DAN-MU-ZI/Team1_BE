@@ -42,7 +42,7 @@ class ScheduleControllerTest {
 	@Test
 	void shouldFailToCheckWeeklyScheduleDueToManagerNotRecruiting() throws Exception {
 		LocalDate startWeekDate = LocalDate.parse("2023-10-09");
-		ResultActions perform = mvc.perform(get(String.format("/api/schedule/remain/week/%s", startWeekDate)));
+		ResultActions perform = mvc.perform(get(String.format("/api/schedule/remain/week?startWeekDate=%s", startWeekDate)));
 
 		perform.andExpect(status().isBadRequest());
 		perform.andDo(print());
@@ -53,7 +53,7 @@ class ScheduleControllerTest {
 	@Test
 	void shouldFailToCheckWeeklyScheduleDueToWrongDateFormat() throws Exception {
 		String wrongDate = "10-10";
-		ResultActions perform = mvc.perform(get(String.format("/api/schedule/remain/week/%s", wrongDate)));
+		ResultActions perform = mvc.perform(get(String.format("/api/schedule/remain/week?startWeekDate=%s", wrongDate)));
 
 		perform.andExpect(status().isBadRequest());
 		perform.andDo(print());
@@ -64,7 +64,7 @@ class ScheduleControllerTest {
 	@Test
 	void shouldFailToCheckWeeklyScheduleDueToManagerNotStarted() throws Exception {
 		LocalDate startWeekDate = LocalDate.parse("2023-10-09");
-		ResultActions perform = mvc.perform(get(String.format("/api/schedule/remain/week/%s", startWeekDate)));
+		ResultActions perform = mvc.perform(get(String.format("/api/schedule/remain/week?startWeekDate=%s", startWeekDate)));
 
 		perform.andExpect(status().isBadRequest());
 	}
@@ -74,7 +74,7 @@ class ScheduleControllerTest {
 	@Test
 	void shouldFailToCheckWeeklyScheduleDueToWorkerNotApplied() throws Exception {
 		LocalDate startWeekDate = LocalDate.parse("2023-10-16");
-		ResultActions perform = mvc.perform(get(String.format("/api/schedule/remain/week/%s", startWeekDate)));
+		ResultActions perform = mvc.perform(get(String.format("/api/schedule/remain/week?startWeekDate=%s", startWeekDate)));
 
 		perform.andExpect(status().isNotFound());
 	}
@@ -84,7 +84,7 @@ class ScheduleControllerTest {
 	@Test
 	void shouldCheckWeeklyScheduleSuccessfullyForManager() throws Exception {
 		LocalDate startWeekDate = LocalDate.parse("2023-10-16");
-		ResultActions perform = mvc.perform(get(String.format("/api/schedule/remain/week/%s", startWeekDate)));
+		ResultActions perform = mvc.perform(get(String.format("/api/schedule/remain/week?startWeekDate=%s", startWeekDate)));
 
 		perform.andExpect(status().isOk());
 		perform.andDo(print());
@@ -95,7 +95,7 @@ class ScheduleControllerTest {
 	@Test
 	void shouldCheckWeeklyScheduleSuccessfullyForWorker() throws Exception {
 		LocalDate startWeekDate = LocalDate.parse("2023-10-09");
-		ResultActions perform = mvc.perform(get(String.format("/api/schedule/remain/week/%s", startWeekDate)));
+		ResultActions perform = mvc.perform(get(String.format("/api/schedule/remain/week?startWeekDate=%s", startWeekDate)));
 
 		perform.andExpect(status().isOk());
 		perform.andDo(print());
@@ -108,7 +108,7 @@ class ScheduleControllerTest {
 		YearMonth month = YearMonth.parse("2023-10");
 		Long memberId = 2L;
 		ResultActions perform = mvc.perform(
-			get(String.format("/api/schedule/fix/month/%s/%s", month, memberId)));
+			get(String.format("/api/schedule/fix/month?requestMonth=%s&memberId=%s", month, memberId)));
 		perform.andExpect(status().isOk());
 		perform.andDo(print());
 	}
@@ -119,7 +119,7 @@ class ScheduleControllerTest {
 	void shouldFailToRetrieveFixedWeeklyScheduleDueToParameterError() throws Exception {
 		Long memberId = 2L;
 		ResultActions perform = mvc.perform(
-			get(String.format("/api/schedule/fix/month/%s/%s", "2023", memberId)));
+			get(String.format("/api/schedule/fix/month?requestMonth=%s&memberId=%s", "2023", memberId)));
 		perform.andExpect(status().isBadRequest());
 		perform.andDo(print());
 	}
@@ -130,7 +130,7 @@ class ScheduleControllerTest {
 	void shouldListRecommendedScheduleCandidates() throws Exception {
 		LocalDate date = LocalDate.parse("2023-10-09");
 		ResultActions perform = mvc.perform(
-			get(String.format("/api/schedule/recommend/%s", date)));
+			get(String.format("/api/schedule/recommend?weekStartDate=%s", date)));
 		perform.andExpect(status().isOk());
 		perform.andDo(print());
 	}
@@ -142,7 +142,7 @@ class ScheduleControllerTest {
 		// given
 		LocalDate date = LocalDate.parse("2023-10-16");
 		mvc.perform(
-			get(String.format("/api/schedule/recommend/%s", date)));
+			get(String.format("/api/schedule/recommend?weekStartDate=%s", date)));
 
 		// when
 		FixSchedule.Request requestDTO = new FixSchedule.Request(date, 1);
