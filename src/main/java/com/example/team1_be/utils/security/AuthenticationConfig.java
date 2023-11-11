@@ -70,9 +70,9 @@ public class AuthenticationConfig {
 
         authorizeError(http);
 
-        http.authorizeRequests()
-                .anyRequest()
-                .denyAll();
+//        http.authorizeRequests()
+//                .anyRequest()
+//                .denyAll();
 
         http.addFilterBefore(new CombinedFilter(jwtProvider, om),
                 UsernamePasswordAuthenticationFilter.class);
