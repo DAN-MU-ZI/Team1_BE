@@ -135,16 +135,16 @@ public class AuthenticationConfig {
 
     private void authorizeGroup(HttpSecurity http) throws Exception {
         http.authorizeRequests()
-                .antMatchers(HttpMethod.POST, "/group")
-                .hasRole(RoleType.ROLE_ADMIN.getAuthority())
-                .antMatchers(HttpMethod.GET, "/group")
-                .hasAnyRole(RoleType.ROLE_ADMIN.getAuthority(), RoleType.ROLE_MEMBER.getAuthority())
+                .antMatchers(HttpMethod.GET, "/group/invitation/information/**")
+                .hasRole(RoleType.ROLE_MEMBER.getAuthority())
                 .antMatchers(HttpMethod.GET, "/group/invitation")
                 .hasRole(RoleType.ROLE_ADMIN.getAuthority())
                 .antMatchers(HttpMethod.POST, "/group/invitation")
                 .hasRole(RoleType.ROLE_MEMBER.getAuthority())
-                .antMatchers(HttpMethod.GET, "/group/invitation/information/**")
-                .hasRole(RoleType.ROLE_MEMBER.getAuthority());
+                .antMatchers(HttpMethod.POST, "/group")
+                .hasRole(RoleType.ROLE_ADMIN.getAuthority())
+                .antMatchers(HttpMethod.GET, "/group")
+                .hasAnyRole(RoleType.ROLE_ADMIN.getAuthority(), RoleType.ROLE_MEMBER.getAuthority());
     }
 
     private void authorizeLogin(HttpSecurity http) throws Exception {
