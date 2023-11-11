@@ -17,6 +17,13 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 import org.springframework.web.method.annotation.MethodArgumentTypeMismatchException;
 
+import com.example.team1_be.utils.ApiUtils;
+
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+
+import java.util.concurrent.TimeoutException;
+
 @Slf4j
 @RestControllerAdvice
 @RequiredArgsConstructor
@@ -63,6 +70,12 @@ public final class GlobalExceptionHandler {
 	@ExceptionHandler(CustomException.class)
 	public ResponseEntity<?> handleCustomException(CustomException e) {
 		return handleException(e, e.getMessage(), e.status(), ClientErrorCode.UNKNOWN_ERROR);
+	}
+
+	@ExceptionHandler(TimeoutException.class)
+	public ResponseEntity<?> timeoutException(TimeoutException e) {
+		ApiUtils.ApiResult<?> error = ApiUtils.error("타임아웃 되었습니다.", ClientErrorCode.TIMEOUT);
+		return new ResponseEntity<>(error, HttpStatus.REQUEST_TIMEOUT);
 	}
 
 	@ExceptionHandler(MethodArgumentNotValidException.class)
