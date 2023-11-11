@@ -94,16 +94,16 @@ public class ScheduleController {
 	public ResponseEntity<ApiUtils.ApiResult<GetFixedWeeklySchedule.Response>> getFixedWeeklySchedule(
 		@AuthenticationPrincipal CustomUserDetails userDetails,
 		@RequestParam("month") @DateTimeFormat(pattern = "yyyy-MM") YearMonth requestMonth,
-		@RequestParam(value = "memberId", required = false) Long memberId) {
+		@RequestParam(value = "userId", required = false) Long userId) {
 
 		GetFixedWeeklySchedule.Response responseDTO;
 
-		if (null == memberId) {
+		if (null == userId) {
 			responseDTO = scheduleService.getPersonalWeeklyFixedSchedule(userDetails.getUser(),
 					requestMonth);
 		} else {
 			responseDTO = scheduleService.getFixedWeeklySchedule(userDetails.getUser(),
-					requestMonth, memberId);
+					requestMonth, userId);
 		}
 		ApiUtils.ApiResult<GetFixedWeeklySchedule.Response> response = ApiUtils.success(responseDTO);
 		return ResponseEntity.ok(response);
