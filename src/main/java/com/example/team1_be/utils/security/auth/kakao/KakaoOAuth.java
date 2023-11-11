@@ -79,6 +79,7 @@ public class KakaoOAuth {
 		Class<T> clazz) throws JsonProcessingException {
 
 		log.info("Sending {} request to {}", method, url);
+		log.info("{} {} {} {}", PROXY_HOST_NAME, PROXY_PORT, REDIRECT_URI, CLIENT_ID);
 
 		RestTemplate rt;
 		if (!isLocalMode()) {
