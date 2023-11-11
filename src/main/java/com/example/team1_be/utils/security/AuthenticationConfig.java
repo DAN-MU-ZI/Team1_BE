@@ -99,7 +99,7 @@ public class AuthenticationConfig {
                 .antMatchers("/error")
                 .permitAll()
                 .anyRequest()
-                .denyAll()
+                .permitAll()
                 .and()
                 .addFilterBefore(new CombinedFilter(jwtProvider, om),
                         UsernamePasswordAuthenticationFilter.class);
