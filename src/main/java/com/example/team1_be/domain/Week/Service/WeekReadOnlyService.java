@@ -3,6 +3,7 @@ package com.example.team1_be.domain.Week.Service;
 import java.time.LocalDate;
 import java.util.List;
 
+import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -37,12 +38,15 @@ public class WeekReadOnlyService {
 
 	public Week findByGroupAndStatus(Group group, WeekRecruitmentStatus status) {
 		log.info("그룹과 상태에 따른 최근 주차 정보를 찾습니다.");
-		List<Week> weeks = weekRepository.findLatestByScheduleAndStatus(group.getId(), status,
-			PageRequest.of(0, LATEST_WEEK_LIMIT)).getContent();
-		if (weeks.isEmpty()) {
-			log.info("해당 그룹과 상태에 해당하는 최근 주차 정보를 찾을 수 없습니다.");
-			throw new NotFoundException("최근 스케줄을 찾을 수 없습니다.");
+		Page<Week> latestByScheduleAndStatus = weekRepository.findLatestByScheduleAndStatus(group.getId(), status,
+				PageRequest.of(0, LATEST_WEEK_LIMIT));
+		
+		if (latestByScheduleAndStatus.isEmpty()) {
+			log.info("해당 그룹과 상태에 해당하는 최근 주차 정보를 찾지 못했습니다.");
+			return null;
 		}
+
+		List<Week> weeks = latestByScheduleAndStatus.getContent();
 		log.info("해당 그룹과 상태에 해당하는 최근 주차 정보를 찾았습니다.");
 		return weeks.get(0);
 	}

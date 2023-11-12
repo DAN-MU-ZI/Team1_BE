@@ -1,9 +1,11 @@
 package com.example.team1_be.domain.Schedule.Service;
 
+import com.example.team1_be.domain.Schedule.DTO.LoadLatestSchedule.Response;
 import java.time.DayOfWeek;
 import java.time.LocalDate;
 import java.time.YearMonth;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -185,6 +187,9 @@ public class ScheduleService {
 
 		Week latestWeek = weekService.findLatestByGroup(group);
 		log.info("최신 스케줄 불러오기가 완료되었습니다.");
+		if(null==latestWeek) {
+			return new Response(Collections.emptyList());
+		}
 		return new LoadLatestSchedule.Response(latestWeek.getWorktimes());
 	}
 

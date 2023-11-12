@@ -37,4 +37,16 @@ public class LoadLatestSchedule {
 		perform.andExpect(status().isOk());
 		perform.andDo(print());
 	}
+
+	@DisplayName("최근 스케줄 조회 실패시 빈배열 제공")
+	@WithMockCustomAdminUser(userId = "2")
+	@Sql("emptyRecentSchedule.sql")
+	@Test
+	void shouldRetrieveEmptyRecentScheduleSuccessfully() throws Exception {
+		LocalDate startWeekDate = LocalDate.parse("2023-11-13");
+		ResultActions perform = mvc.perform(
+				get(String.format("/api/schedule/worktime?startWeekDate=%s", startWeekDate)));
+		perform.andExpect(status().isOk());
+		perform.andDo(print());
+	}
 }
