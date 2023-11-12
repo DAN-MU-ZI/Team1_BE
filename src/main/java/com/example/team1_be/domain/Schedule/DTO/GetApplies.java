@@ -38,10 +38,10 @@ public class GetApplies {
 			private LocalTime endTime;
 
 			public Template(Worktime worktime) {
-				this.title = title;
-				this.workTimeId = workTimeId;
-				this.startTime = startTime;
-				this.endTime = endTime;
+				this.title = worktime.getTitle();
+				this.workTimeId = worktime.getId();
+				this.startTime = worktime.getStartTime();
+				this.endTime = worktime.getEndTime();
 			}
 		}
 
