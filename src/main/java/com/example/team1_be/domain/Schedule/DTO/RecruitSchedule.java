@@ -24,6 +24,9 @@ public class RecruitSchedule {
 		@Valid
 		@NotEmpty(message = "근무일정이 비어있습니다.")
 		private List<Template> template;
+		/**
+		 * "{"weekStartDate":"2023-11-27","amount":[[2],[0],[0],[0],[0],[0],[0]],"template":[{"title":"오픈","startTime":"10:00:00","endTime":"12:00:00"}]}"
+		 */
 
 		@NotEmpty(message = "지원자가 비어있을 수 없습니다.")
 		private List<List<Long>> amount;
@@ -36,7 +39,7 @@ public class RecruitSchedule {
 
 		@Getter
 		@NoArgsConstructor
-		private class Template {
+		private static class Template {
 			private String title;
 			private LocalTime startTime;
 			private LocalTime endTime;
