@@ -34,7 +34,7 @@ public class PostApplies {
 
 		public SortedMap<DayOfWeek, List<Worktime>> toWeeklyApplies() {
 			SortedMap<DayOfWeek, List<Worktime>> weeklyApplies = new TreeMap<>(
-				(s1, s2) -> s1.compareTo(s2));
+					Enum::compareTo);
 			for (DayOfWeek day : DayOfWeek.values()) {
 				List<SelectedStatus> dailyStatus = this.apply.get(day.ordinal());
 
