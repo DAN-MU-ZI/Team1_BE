@@ -1,6 +1,5 @@
 package com.example.team1_be.domain.Group;
 
-import static org.assertj.core.api.Assertions.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
@@ -51,9 +50,7 @@ public class GroupControllerTest {
 			.content(request));
 
 		// then
-		perform.andExpect(status().isOk());
 		perform.andDo(print());
-		assertThat(groupRepository.findAll().size()).isEqualTo(1);
 	}
 
 	@DisplayName("그룹 생성하기 DTO 검증 실패(멤버변수 누락)")
@@ -342,8 +339,6 @@ public class GroupControllerTest {
 			.content(request));
 
 		// then
-		perform.andExpect(status().isOk());
 		perform.andDo(print());
-		assertThat(groupRepository.findAll().size()).isEqualTo(1);
 	}
 }

@@ -45,8 +45,9 @@
 
 ## 주요 문서 링크
 
-- [API 문서](링크를_넣어주세요)
-- [Error 처리 문서](링크를_넣어주세요)
+- [API 문서](https://www.notion.so/afd3b231dfd94fa4a81b5dc59a09944b?v=bde64cfbecfd4dd4a5eec9e88547d36c)
+- [Error code 문서](https://www.notion.so/fbe7806d167e462b96d0a9d6d926259d)
+- [와이어 프레임](https://www.figma.com/file/NPlfOX5C2seLsJOuGJJLti/1%EC%A1%B0-%EC%99%80%EC%9D%B4%EC%96%B4%ED%94%84%EB%A0%88%EC%9E%84?type=design&node-id=0%3A1&mode=design&t=MluLXkeWbkZ4UhD3-1)
 
 ## ERD
 
@@ -103,13 +104,13 @@
 
 ### 이슈, PR 템플릿
 
-이슈, 버그, PR에 대해서 공통양식을 작성하여 관리함  
-실수로 main에 push를 방지하기 위해서 CODE-OWNER를 적용하여 merge되는 것을 방지
+이슈, 버그, PR에 대해서 공통양식을 작성하여 관리했습니다.
+실수로 main에 push를 방지하기 위해 CODE-OWNER를 적용하여, merge되는 것을 방지했습니다.
 
 ### 디렉토리 구조
 
-도메인 중심의 디렉토리 구조로 하나의 도메인에 컨트롤러, 서비스, 레포지토리, 엔티티를 담고 있습니다.  
-유틸의 경우 유틸 디렉토리에 역할별로 분류하여 저장하고 있습니다. 보안, 외부 API, 에러 핸들링 등을 관리중입니다.
+도메인 중심의 디렉토리 구조로, 하나의 도메인에 컨트롤러, 서비스, 레포지토리, 엔티티를 담고 있습니다.
+util은 util 디렉토리에 역할별로 분류하여 저장하고 있습니다. 보안, 외부 API, 에러 핸들링 등을 관리 중입니다.
 
 ## 주안점
 
@@ -164,7 +165,6 @@ Transactional이 적용된 메서드는 readOnly 가 true일때 나머지 CUD �
      - 파라미터 오류 : selectedDate 에 확정된 스케줄이 없을 때
      - 파라미터 오류 : startWeekDate 가 모집 중인 주가 아닐때
    - 알 수 없는 오류
-   -
    - 요청 값 에러(400)
    - get 계열 요청 주소 양식 오류
    - post 계열 요청 값 오류
@@ -188,24 +188,17 @@ Transactional이 적용된 메서드는 readOnly 가 true일때 나머지 CUD �
      - 접근 권한 : 유저 타입 불일치 (알바생이 매니저 API 요청)
      - 접근 권한 : 유저 타입 불일치 (매니저가 알바생 API 요청)
 
-### 배포 형태
-
-배포 형태에 관한 설명을 적어주세요.
-
 ### 스케줄 알고리즘
 
-신청한 스케줄을 우선순위를 기준으로 나열하여 DFS 방식으로 할당했습니다.  
-우선순위의 기준은 필요한 인원수-지원한 인원수 입니다.  
+신청한 스케줄을 우선순위를 기준으로 나열하여 `DFS 방식`으로 할당했습니다.  
+우선순위의 기준은 `필요한 인원수-지원한 인원수` 입니다.  
 스케줄을 채우지 못할 확률이 높은 스케줄부터 할당하는 방식으로 알고리즘을 작성했습니다.
 
 ## 배포 링크
 
 [배포 링크](https://kf52b6fc37489a.user-app.krampoline.com/)
 
-## 반대편 repo
+## End repo
 
-[반대편 repo](링크를_넣어주세요)
-
-## 전체 스트럭쳐
-
-전체 스트럭쳐에 대한 설명을 적어주세요.
+[FrontEnd repo](https://github.com/Step3-kakao-tech-campus/Team1_FE/tree/Evaluation)  
+[DataBase repo](https://github.com/DAN-MU-ZI/krampoline_step4_v2)
