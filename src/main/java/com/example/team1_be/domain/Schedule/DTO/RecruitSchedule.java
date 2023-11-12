@@ -35,6 +35,7 @@ public class RecruitSchedule {
 		}
 
 		@Getter
+		@NoArgsConstructor
 		private class Template {
 			private final String title;
 			private final LocalTime startTime;
