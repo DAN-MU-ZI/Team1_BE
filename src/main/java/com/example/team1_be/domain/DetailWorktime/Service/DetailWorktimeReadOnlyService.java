@@ -1,5 +1,7 @@
 package com.example.team1_be.domain.DetailWorktime.Service;
 
+import com.example.team1_be.utils.errors.ClientErrorCode;
+import com.example.team1_be.utils.errors.exception.BadRequestException;
 import java.time.DayOfWeek;
 import java.time.LocalDate;
 import java.util.List;
@@ -56,7 +58,7 @@ public class DetailWorktimeReadOnlyService {
 		List<DetailWorktime> detailWorktimes = repository.findByGroupAndDate(group.getId(), selectedDate);
 		if (detailWorktimes.isEmpty()) {
 			log.warn("그룹 ID: {}, 선택된 날짜: {}에 따른 상세 근무 시간 정보를 찾지 못하였습니다.", group.getId(), selectedDate);
-			throw new CustomException("등록된 근무일정이 없습니다.", HttpStatus.NOT_FOUND);
+			throw new NotFoundException("등록된 근무일정이 없습니다.", ClientErrorCode.NO_CONFIRMED_SCHEDULE);
 		}
 		log.info("그룹 ID: {}, 선택된 날짜: {}에 따른 상세 근무 시간 정보를 조회하였습니다.", group.getId(), selectedDate);
 		return detailWorktimes;
