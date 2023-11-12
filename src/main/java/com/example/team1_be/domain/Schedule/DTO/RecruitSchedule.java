@@ -37,9 +37,9 @@ public class RecruitSchedule {
 		@Getter
 		@NoArgsConstructor
 		private class Template {
-			private final String title;
-			private final LocalTime startTime;
-			private final LocalTime endTime;
+			private String title;
+			private LocalTime startTime;
+			private LocalTime endTime;
 
 			public Template(Worktime worktime) {
 				this.title = worktime.getTitle();
