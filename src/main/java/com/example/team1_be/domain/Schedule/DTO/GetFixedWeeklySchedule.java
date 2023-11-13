@@ -32,7 +32,12 @@ public class GetFixedWeeklySchedule {
 				}
 				schedule.add(new DailySchedule(date, applyTitles));
 			}
-			this.work_summary = new WorkSummary(totalWorktime / memberWorktimes.size() * 7, totalWorktime);
+
+			if(totalWorktime==0) {
+				this.work_summary = new WorkSummary(0, totalWorktime);
+			} else {
+				this.work_summary = new WorkSummary(totalWorktime / memberWorktimes.size() * 7, totalWorktime);
+			}
 		}
 
 		@Getter
