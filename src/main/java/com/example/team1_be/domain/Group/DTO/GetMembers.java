@@ -25,14 +25,14 @@ public class GetMembers {
 
 		@Getter
 		private class MemberInfo {
-			private final Long memberId;
+			private final Long userId;
 			private final String name;
 			private final Boolean isAdmin;
 
-			private MemberInfo(User member) {
-				this.memberId = member.getId();
-				this.name = member.getName();
-				this.isAdmin = member.getIsAdmin();
+			private MemberInfo(User user) {
+				this.userId = user.getId();
+				this.name = user.getName();
+				this.isAdmin = user.getIsAdmin();
 			}
 		}
 	}
