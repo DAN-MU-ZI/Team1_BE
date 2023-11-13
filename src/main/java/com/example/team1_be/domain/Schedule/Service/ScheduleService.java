@@ -10,6 +10,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.SortedMap;
+import java.util.TreeMap;
 import java.util.stream.Collectors;
 
 import org.springframework.stereotype.Service;
@@ -77,7 +78,7 @@ public class ScheduleService {
 		weekService.checkAppliable(user, week);
 		List<Worktime> weeklyWorktimes = weekService.findWorktimes(week);
 		ApplyStatus applyStatus = user.getIsAdmin() ? ApplyStatus.REMAIN : ApplyStatus.FIX;
-		Map<String, List<Map<Worktime, List<Apply>>>> weeklyApplies = detailWorktimeService.findAppliesByWorktimeAndDayAndStatus(
+		TreeMap<String, List<Map<Worktime, List<Apply>>>> weeklyApplies = detailWorktimeService.findAppliesByWorktimeAndDayAndStatus(
 			weeklyWorktimes,
 			applyStatus);
 		log.info("주간 스케줄 확인이 완료되었습니다.");

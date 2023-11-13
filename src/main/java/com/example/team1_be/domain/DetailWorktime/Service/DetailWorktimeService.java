@@ -43,9 +43,10 @@ public class DetailWorktimeService {
 		writeOnlyService.registerWeeklyDetailWorktimesWithWorktimesAndAmounts(week, weeklyWorktimes, amount);
 	}
 
-	public Map<String, List<Map<Worktime, List<Apply>>>> findAppliesByWorktimeAndDayAndStatus(List<Worktime> worktimes,
+	public TreeMap<String, List<Map<Worktime, List<Apply>>>> findAppliesByWorktimeAndDayAndStatus(List<Worktime> worktimes,
 		ApplyStatus status) {
-		Map<String, List<Map<Worktime, List<Apply>>>> weeklyApplies = new HashMap<>();
+		TreeMap<String, List<Map<Worktime, List<Apply>>>> weeklyApplies = new TreeMap<>(
+				Comparator.comparing(DayOfWeek::valueOf));
 		for (DayOfWeek day : DayOfWeek.values()) {
 			List<Map<Worktime, List<Apply>>> dailyApplies = new ArrayList<>();
 			for (Worktime worktime : worktimes) {
