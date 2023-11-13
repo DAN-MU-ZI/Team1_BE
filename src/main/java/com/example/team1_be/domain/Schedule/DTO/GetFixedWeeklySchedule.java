@@ -34,7 +34,7 @@ public class GetFixedWeeklySchedule {
 			}
 
 			if(totalWorktime==0) {
-				this.work_summary = new WorkSummary(0, totalWorktime);
+				this.work_summary = new WorkSummary(0.0, totalWorktime);
 			} else {
 				this.work_summary = new WorkSummary(totalWorktime / memberWorktimes.size() * 7, totalWorktime);
 			}
