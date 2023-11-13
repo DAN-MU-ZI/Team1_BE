@@ -73,7 +73,7 @@ public class ScheduleController {
 	@GetMapping("/recommend")
 	public ResponseEntity<ApiUtils.ApiResult<RecommendSchedule.Response>> recommendSchedule(
 		@AuthenticationPrincipal CustomUserDetails userDetails,
-		@RequestParam("weekStartDate") @DateTimeFormat(pattern = "yyyy-MM-dd") LocalDate date) {
+		@RequestParam("startWeekDate") @DateTimeFormat(pattern = "yyyy-MM-dd") LocalDate date) {
 
 		RecommendSchedule.Response responseDTO = scheduleService.recommendSchedule(userDetails.getUser(), date);
 		ApiUtils.ApiResult<RecommendSchedule.Response> response = ApiUtils.success(responseDTO);
