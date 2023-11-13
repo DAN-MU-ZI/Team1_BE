@@ -74,7 +74,7 @@ public class GetAppliesTest {
 	}
 
 	@DisplayName("스케줄 신청/수정 제출 DTO 포함 요청")
-	@WithMockCustomMemberUser(userId = "2")
+	@WithMockCustomMemberUser(userId = "7")
 	@Test
 	void shouldSubmitScheduleApplicationWithDto() throws Exception {
 		// given
@@ -103,5 +103,6 @@ public class GetAppliesTest {
 			put("/api/schedule/application").contentType(MediaType.APPLICATION_JSON).content(DTO));
 		perform.andExpect(status().isOk());
 		perform.andDo(print());
+		System.out.println(DTO);
 	}
 }
