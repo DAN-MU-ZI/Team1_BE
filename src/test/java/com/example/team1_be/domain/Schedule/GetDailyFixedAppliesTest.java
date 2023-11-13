@@ -36,7 +36,7 @@ public class GetDailyFixedAppliesTest {
 		// given
 		LocalDate date = LocalDate.parse("2023-10-16");
 		mvc.perform(
-				get(String.format("/api/schedule/recommend?weekStartDate=%s", date)))
+				get(String.format("/api/schedule/recommend?startWeekDate=%s", date)))
 			.andExpect(status().isOk())
 			.andDo(print());
 

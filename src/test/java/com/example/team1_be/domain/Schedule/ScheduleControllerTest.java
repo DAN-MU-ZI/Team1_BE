@@ -130,7 +130,7 @@ class ScheduleControllerTest {
 	void shouldListRecommendedScheduleCandidates() throws Exception {
 		LocalDate date = LocalDate.parse("2023-10-09");
 		ResultActions perform = mvc.perform(
-			get(String.format("/api/schedule/recommend?weekStartDate=%s", date)));
+			get(String.format("/api/schedule/recommend?startWeekDate=%s", date)));
 		perform.andExpect(status().isOk());
 		perform.andDo(print());
 	}
@@ -142,7 +142,7 @@ class ScheduleControllerTest {
 		// given
 		LocalDate date = LocalDate.parse("2023-10-16");
 		mvc.perform(
-			get(String.format("/api/schedule/recommend?weekStartDate=%s", date)));
+			get(String.format("/api/schedule/recommend?startWeekDate=%s", date)));
 
 		// when
 		FixSchedule.Request requestDTO = new FixSchedule.Request(date, 1);
