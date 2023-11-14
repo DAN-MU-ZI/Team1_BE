@@ -188,9 +188,9 @@ public class ScheduleService {
         List<DetailWorktime> detailWorktimes = detailWorktimeService.findByGroupAndDate(group, selectedDate);
         for (DetailWorktime detailWorktime : detailWorktimes) {
             List<User> appliers = applyService.findUsersByWorktimeAndFixedStatus(detailWorktime);
-            if (appliers.size() != detailWorktime.getAmount()) {
-                throw new NotFoundException("기존 worktime에서 모집하는 인원을 충족하지 못했습니다.");
-            }
+//            if (appliers.size() != detailWorktime.getAmount()) {
+//                throw new NotFoundException("기존 worktime에서 모집하는 인원을 충족하지 못했습니다.");
+//            }
             dailyApplyMap.put(detailWorktime.getWorktime(), appliers);
         }
         log.info("일일 고정 신청서 가져오기가 완료되었습니다.");
