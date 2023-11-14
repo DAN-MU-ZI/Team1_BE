@@ -64,7 +64,6 @@ public class ApplyService {
         List<User> users = readOnlyService.findUsersByWorktimeIdAndApplyStatus(worktime.getId(), status);
         if (users.isEmpty()) {
             log.warn("근무 시간 ID: {}, 상태: {}에 따른 신청자를 찾을 수 없습니다.", worktime.getId(), status);
-            throw new NotFoundException("확정된 신청자를 찾을 수 없습니다.");
         }
         log.info("근무 시간 ID: {}, 상태: {}에 따른 신청자를 조회하였습니다.", worktime.getId(), status);
         return users;
