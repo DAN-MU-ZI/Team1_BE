@@ -113,6 +113,19 @@ class ScheduleControllerTest {
 		perform.andDo(print());
 	}
 
+	@DisplayName("멤버별 확정 스케줄 조회 성공(공백포함)")
+	@WithMockCustomAdminUser
+	@Sql("empty-schedule.sql")
+	@Test
+	void shouldRetrieveFixedWeeklyScheduleWithEmptySuccessfullyForMembers() throws Exception {
+		YearMonth month = YearMonth.parse("2023-11");
+		Long memberId = 2L;
+		ResultActions perform = mvc.perform(
+				get(String.format("/api/schedule/fix/month?month=%s&userId=%s", month, memberId)));
+		perform.andExpect(status().isOk());
+		perform.andDo(print());
+	}
+
 	@DisplayName("멤버별 확정 스케줄 조회 실패(파라미터 에러)")
 	@WithMockCustomAdminUser
 	@Test

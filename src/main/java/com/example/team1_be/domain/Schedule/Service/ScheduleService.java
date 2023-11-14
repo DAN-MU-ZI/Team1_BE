@@ -95,6 +95,7 @@ public class ScheduleService {
         while (weekStartDate.isBefore(requestMonth.plusMonths(1).atDay(1))) {
             Week week = weekService.findByGroupAndStartDateOrNull(group, weekStartDate);
             if (null != week) {
+                log.info("주간 일정표 {} ", detailWorktimeService.findByWeekOrNull(group, week).size());
                 monthlyDetailWorktimes.putAll(detailWorktimeService.findByWeekOrNull(group, week));
             }
             weekStartDate = weekStartDate.plusDays(1);

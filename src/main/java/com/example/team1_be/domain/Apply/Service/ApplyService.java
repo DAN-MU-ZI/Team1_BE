@@ -48,9 +48,7 @@ public class ApplyService {
         SortedMap<LocalDate, List<Apply>> monthlyApplies = new TreeMap<>(LocalDate::compareTo);
         for (LocalDate date : monthlyDetailWorktimes.keySet()) {
             List<Apply> applies = readOnlyService.findApplyByUserIdAndDateAndStatus(user.getId(), date, status);
-            if (!applies.isEmpty()) {
-                monthlyApplies.put(date, applies);
-            }
+            monthlyApplies.put(date, applies);
         }
         return monthlyApplies;
     }
@@ -59,9 +57,6 @@ public class ApplyService {
             SortedMap<LocalDate, List<DetailWorktime>> monthlyDetailWorktimes, User user) {
         SortedMap<LocalDate, List<Apply>> monthlyApplies = findAppliesByStatusAndDate(monthlyDetailWorktimes, user,
                 ApplyStatus.FIX);
-        if (monthlyApplies.isEmpty()) {
-            throw new NotFoundException("확정된 스케줄이 없습니다.");
-        }
         return monthlyApplies;
     }
 
