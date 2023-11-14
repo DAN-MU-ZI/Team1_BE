@@ -1,6 +1,7 @@
 package com.example.team1_be.domain.Week.Service;
 
 import static com.example.team1_be.domain.Week.WeekRecruitmentStatus.ENDED;
+import static com.example.team1_be.domain.Week.WeekRecruitmentStatus.STARTED;
 
 import java.time.LocalDate;
 import java.util.List;
@@ -55,7 +56,7 @@ public class WeekService {
     public Week findByGroupAndStartDateOrNull(Group group, LocalDate startDate) {
         log.info("그룹과 시작 날짜에 따른 주차를 찾습니다.");
         Week week = readOnlyService.findByGroupAndStartDate(group, startDate);
-        if (null == week || week.getStatus().equals(ENDED)) {
+        if (null == week || week.getStatus().equals(STARTED)) {
             log.info("해당 주차를 찾을 수 없습니다.");
             return null;
         }
@@ -98,7 +99,7 @@ public class WeekService {
             log.info("이미 마감된 스케줄입니다.");
             throw new BadRequestException("이미 마감된 스케줄입니다.", ClientErrorCode.RECRUITMENT_CLOSED);
         }
-        if (!user.getIsAdmin() && week.getStatus().equals(WeekRecruitmentStatus.STARTED)) {
+        if (!user.getIsAdmin() && week.getStatus().equals(STARTED)) {
             log.info("확정된 스케줄이 아닙니다.");
             throw new NotFoundException("확정된 스케줄이 아닙니다.");
         }
