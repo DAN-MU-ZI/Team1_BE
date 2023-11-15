@@ -40,7 +40,7 @@ public class ScheduleGenerator {
 
 	public List<Map<DayOfWeek, SortedMap<Worktime, List<Apply>>>> generateSchedule() {
 		log.info("스케줄을 생성합니다.");
-		recursiveSearch();
+		recursiveSearch(applyList, 0, requestMap, new ArrayList<>());
 
 		List<Map<DayOfWeek, SortedMap<Worktime, List<Apply>>>> result = this.generatedApplies.stream()
 			.map(this::generateDayOfWeekSortedMap)
@@ -50,31 +50,38 @@ public class ScheduleGenerator {
 		return result;
 	}
 
-	private void recursiveSearch() {
-		while (index < applyList.size() && limit > 0) {
+	private void recursiveSearch(List<Apply> applyList, int index, Map<Long, Long> remainRequestMap,
+								 List<Apply> fixedApplies) {
+		if (isSearchComplete(remainRequestMap, index)) {
+			if (limit != 0) {
+				this.generatedApplies.add(new ArrayList<>(fixedApplies));
+				limit--;
+			}
+			return;
+		}
+
+		while (index < applyList.size()) {
+			Map<Long, Long> copiedRequestMap = new HashMap<>(remainRequestMap);
+			List<Apply> copiedFixedApplies = new ArrayList<>(fixedApplies);
+
 			Apply selectedApply = applyList.get(index);
 			Long selectedWorktimeId = selectedApply.getDetailWorktime().getId();
-			Long selectedAppliers = remainRequestMap.get(selectedWorktimeId);
+			Long selectedAppliers = copiedRequestMap.get(selectedWorktimeId);
 
-			if (selectedAppliers > 0) {
-				remainRequestMap.put(selectedWorktimeId, selectedAppliers - 1);
-				fixedApplies.add(selectedApply);
-				index++;
-				recursiveSearch();
+			if (selectedAppliers != null && selectedAppliers != 0) {
+				copiedRequestMap.put(selectedWorktimeId, selectedAppliers - 1);
+				copiedFixedApplies.add(selectedApply);
+				recursiveSearch(applyList, index + 1, copiedRequestMap, copiedFixedApplies);
 				if (limit == 0) {
 					return;
 				}
 			}
-			index++;
-		}
 
-		if (isSearchComplete()) {
-			generatedApplies.add(new ArrayList<>(fixedApplies));
-			limit--;
+			index++;
 		}
 	}
 
-	private boolean isSearchComplete() {
+	private boolean isSearchComplete(Map<Long, Long> remainRequestMap, int index) {
 		return remainRequestMap.values().stream().mapToInt(Long::intValue).sum() == 0 || index == applyList.size();
 	}
 
