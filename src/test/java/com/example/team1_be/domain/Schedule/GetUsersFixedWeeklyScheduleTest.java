@@ -27,11 +27,12 @@ public class GetUsersFixedWeeklyScheduleTest {
 	@Autowired
 	private ObjectMapper om;
 
+	private final String CURRENTYEARMONTH = "2023-11";
 	@DisplayName("개인 확정 스케줄 조회 성공")
 	@WithMockCustomAdminUser(userId = "2")
 	@Test
 	void shouldRetrieveUsersFixedWeeklyScheduleSuccessfully() throws Exception {
-		YearMonth month = YearMonth.parse("2023-10");
+		YearMonth month = YearMonth.parse(CURRENTYEARMONTH);
 		ResultActions perform = mvc.perform(
 			get(String.format("/api/schedule/fix/month?month=%s", month)));
 		perform.andExpect(status().isOk());

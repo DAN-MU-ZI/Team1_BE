@@ -1,5 +1,6 @@
 package com.example.team1_be.domain.Apply.Service;
 
+import com.example.team1_be.domain.Week.Week;
 import java.time.DayOfWeek;
 import java.time.LocalDate;
 import java.util.ArrayList;
@@ -17,7 +18,6 @@ import com.example.team1_be.domain.Apply.ApplyStatus;
 import com.example.team1_be.domain.DetailWorktime.DetailWorktime;
 import com.example.team1_be.domain.User.User;
 import com.example.team1_be.domain.Worktime.Worktime;
-import com.example.team1_be.utils.errors.exception.NotFoundException;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -115,5 +115,20 @@ public class ApplyService {
     private void createApplies(User user, HashSet<DetailWorktime> detailWorktimes) {
         log.info("사용자 ID: {}에 대하여 신청 정보 {} 개를 생성합니다.", user.getId(), detailWorktimes.size());
         writeOnlyService.registerAppliesForUser(user, new ArrayList<>(detailWorktimes));
+    }
+
+    public List<Worktime> findFixedWorktimeAtCurrentWeek(Week week, User user, Boolean isPersonal) {
+        if (isPersonal) {
+            List<Apply> applies = readOnlyService.findFixedAppliesByUserAndWeek(user.getId(), week.getId());
+            return getWorktimes(applies);
+        }
+
+        List<Apply> applies = readOnlyService.findFixedAppliesByWeek(week.getId());
+        return getWorktimes(applies);
+    }
+
+    private static List<Worktime> getWorktimes(List<Apply> applies) {
+        return applies.stream().map(Apply::getDetailWorktime).map(DetailWorktime::getWorktime)
+                .collect(Collectors.toList());
     }
 }

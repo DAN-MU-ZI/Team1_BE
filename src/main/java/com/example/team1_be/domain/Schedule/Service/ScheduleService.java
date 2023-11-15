@@ -2,6 +2,7 @@ package com.example.team1_be.domain.Schedule.Service;
 
 import com.example.team1_be.domain.Schedule.DTO.LoadLatestSchedule.Response;
 import java.time.DayOfWeek;
+import java.time.Duration;
 import java.time.LocalDate;
 import java.time.YearMonth;
 import java.util.ArrayList;
@@ -44,7 +45,6 @@ import com.example.team1_be.domain.Week.Week;
 import com.example.team1_be.domain.Week.WeekRecruitmentStatus;
 import com.example.team1_be.domain.Worktime.Service.WorktimeService;
 import com.example.team1_be.domain.Worktime.Worktime;
-import com.example.team1_be.utils.errors.exception.NotFoundException;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -90,26 +90,47 @@ public class ScheduleService {
         Group group = userService.findGroupByUser(user);
         User member = userService.findById(userId);
 
-        LocalDate weekStartDate = requestMonth.atDay(1).minusDays(requestMonth.atDay(1).getDayOfWeek().ordinal());
-        TreeMap<LocalDate, List<DetailWorktime>> monthlyDetailWorktimes = new TreeMap<>();
-        while (weekStartDate.isBefore(requestMonth.plusMonths(1).atDay(1))) {
-            Week week = weekService.findByGroupAndStartDateOrNull(group, weekStartDate);
-            if (null != week) {
-                log.info("주간 일정표 {} ", detailWorktimeService.findByWeekOrNull(group, week).size());
-                monthlyDetailWorktimes.putAll(detailWorktimeService.findByWeekOrNull(group, week));
-            }
-            weekStartDate = weekStartDate.plusDays(1);
-        }
+        List<Worktime> fixedWorktimeAtCurrentWeek = getCurrentWeekWorktimes(
+                group, user, false);
+
+        TreeMap<LocalDate, List<DetailWorktime>> monthlyDetailWorktimes = getLocalDateListTreeMap(
+                requestMonth, group);
 
         SortedMap<LocalDate, List<Apply>> monthlyFixedApplies = applyService.findFixedAppliesByUserAndDate(
                 monthlyDetailWorktimes, member);
         log.info("고정 주간 스케줄 가져오기가 완료되었습니다.");
-        return new GetFixedWeeklySchedule.Response(monthlyFixedApplies);
+        return new GetFixedWeeklySchedule.Response(fixedWorktimeAtCurrentWeek, monthlyFixedApplies);
     }
 
     public GetFixedWeeklySchedule.Response getPersonalWeeklyFixedSchedule(User user, YearMonth requestMonth) {
         log.info("개인 주간 고정 스케줄을 가져옵니다.");
         Group group = userService.findGroupByUser(user);
+
+        List<Worktime> fixedWorktimeAtCurrentWeek = getCurrentWeekWorktimes(
+                group, user, true);
+
+        TreeMap<LocalDate, List<DetailWorktime>> monthlyDetailWorktimes = getLocalDateListTreeMap(
+                requestMonth, group);
+        SortedMap<LocalDate, List<Apply>> monthlyFixedApplies = applyService.findFixedPersonalApplies(
+                monthlyDetailWorktimes, user);
+        log.info("개인 주간 고정 스케줄 가져오기가 완료되었습니다.");
+        return new GetFixedWeeklySchedule.Response(fixedWorktimeAtCurrentWeek, monthlyFixedApplies);
+    }
+
+    private List<Worktime> getCurrentWeekWorktimes(Group group, User user, boolean isPersonal) {
+        LocalDate now = LocalDate.now();
+        LocalDate weekStartDate = now.minusDays(now.getDayOfWeek().ordinal());
+        Week week = weekService.findByGroupAndStartDateOrNull(group, weekStartDate);
+        List<Worktime> fixedWorktimeAtCurrentWeek = new ArrayList<>();
+        if (null != week) {
+            fixedWorktimeAtCurrentWeek.addAll(applyService.findFixedWorktimeAtCurrentWeek(week, user,
+                    isPersonal));
+            log.info("{} 개의 일정을 찾았습니다.", fixedWorktimeAtCurrentWeek.size());
+        }
+        return fixedWorktimeAtCurrentWeek;
+    }
+
+    private TreeMap<LocalDate, List<DetailWorktime>> getLocalDateListTreeMap(YearMonth requestMonth, Group group) {
         LocalDate weekStartDate = requestMonth.atDay(1).minusDays(requestMonth.atDay(1).getDayOfWeek().ordinal());
         TreeMap<LocalDate, List<DetailWorktime>> monthlyDetailWorktimes = new TreeMap<>();
         while (weekStartDate.isBefore(requestMonth.plusMonths(1).atDay(1))) {
@@ -119,10 +140,7 @@ public class ScheduleService {
             }
             weekStartDate = weekStartDate.plusDays(1);
         }
-        SortedMap<LocalDate, List<Apply>> monthlyFixedApplies = applyService.findFixedPersonalApplies(
-                monthlyDetailWorktimes, user);
-        log.info("개인 주간 고정 스케줄 가져오기가 완료되었습니다.");
-        return new GetFixedWeeklySchedule.Response(monthlyFixedApplies);
+        return monthlyDetailWorktimes;
     }
 
     public void fixSchedule(User user, FixSchedule.Request request) {
