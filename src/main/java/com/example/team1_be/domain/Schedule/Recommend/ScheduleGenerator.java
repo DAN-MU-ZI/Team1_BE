@@ -52,7 +52,7 @@ public class ScheduleGenerator {
 
 	private void recursiveSearch(List<Apply> applyList, int index, Map<Long, Long> remainRequestMap,
 								 List<Apply> fixedApplies) {
-		if (isSearchComplete(remainRequestMap, index)) {
+		if (isSearchComplete(remainRequestMap)) {
 			if (limit != 0) {
 				this.generatedApplies.add(new ArrayList<>(fixedApplies));
 				limit--;
@@ -81,8 +81,8 @@ public class ScheduleGenerator {
 		}
 	}
 
-	private boolean isSearchComplete(Map<Long, Long> remainRequestMap, int index) {
-		return remainRequestMap.values().stream().mapToInt(Long::intValue).sum() == 0 || index == applyList.size();
+	private boolean isSearchComplete(Map<Long, Long> remainRequestMap) {
+		return remainRequestMap.values().stream().mapToInt(Long::intValue).sum() == 0;
 	}
 
 	private Map<DayOfWeek, SortedMap<Worktime, List<Apply>>> generateDayOfWeekSortedMap(List<Apply> applies) {
