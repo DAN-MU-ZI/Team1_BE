@@ -14,7 +14,8 @@ import com.example.team1_be.domain.User.User;
 public interface ApplyRepository extends JpaRepository<Apply, Long> {
 	@Query("select a " +
 		"from Apply a " +
-		"where a.detailWorktime.worktime.id in (:detailWorktimeIds)")
+		"where a.detailWorktime.worktime.id in (:detailWorktimeIds) "
+			+ "and a.detailWorktime.amount != 0")
 	List<Apply> findAppliesByWorktimeIds(@Param("detailWorktimeIds") List<Long> detailWorktimeIds);
 
 	@Query("select a "

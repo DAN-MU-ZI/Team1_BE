@@ -143,12 +143,35 @@ class ScheduleControllerTest {
 
 	@DisplayName("추천 스케줄 후보 리스팅")
 	@WithMockCustomAdminUser
-	@Sql("recommend.sql")
 	@Test
 	void shouldListRecommendedScheduleCandidates() throws Exception {
-		LocalDate date = LocalDate.parse("2023-12-04");
+		LocalDate date = LocalDate.parse(STRATWEEKDATE);
 		ResultActions perform = mvc.perform(
 			get(String.format("/api/schedule/recommend?startWeekDate=%s", date)));
+		perform.andExpect(status().isOk());
+		perform.andDo(print());
+	}
+
+	@DisplayName("추천 스케줄 후보 리스팅2")
+	@WithMockCustomAdminUser
+	@Sql("recommend.sql")
+	@Test
+	void shouldListRecommendedScheduleCandidates2() throws Exception {
+		LocalDate date = LocalDate.parse("2023-12-04");
+		ResultActions perform = mvc.perform(
+				get(String.format("/api/schedule/recommend?startWeekDate=%s", date)));
+		perform.andExpect(status().isOk());
+		perform.andDo(print());
+	}
+
+	@DisplayName("추천 스케줄 후보 리스팅3")
+	@WithMockCustomAdminUser
+	@Sql("recommend2.sql")
+	@Test
+	void shouldListRecommendedScheduleCandidates3() throws Exception {
+		LocalDate date = LocalDate.parse("2023-12-04");
+		ResultActions perform = mvc.perform(
+				get(String.format("/api/schedule/recommend?startWeekDate=%s", date)));
 		perform.andExpect(status().isOk());
 		perform.andDo(print());
 	}

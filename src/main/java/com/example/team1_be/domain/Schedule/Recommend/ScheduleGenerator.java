@@ -1,12 +1,16 @@
 package com.example.team1_be.domain.Schedule.Recommend;
 
+import com.example.team1_be.domain.DetailWorktime.DetailWorktime;
 import java.time.DayOfWeek;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.Objects;
+import java.util.Optional;
 import java.util.SortedMap;
 import java.util.TreeMap;
 import java.util.stream.Collectors;
@@ -58,7 +62,9 @@ public class ScheduleGenerator {
 	private void recursiveSearch(List<Apply> applyList, int index, Map<Long, Long> remainRequestMap,
 								 List<Apply> fixedApplies) {
 		if (isSearchComplete(remainRequestMap)) {
+			log.info("완성된 스케줄 존재");
 			if (limit != 0) {
+				log.info("완성된 스케줄 추가");
 				this.generatedApplies.add(new ArrayList<>(fixedApplies));
 				limit--;
 			}
@@ -66,6 +72,29 @@ public class ScheduleGenerator {
 		}
 
 		while (index < applyList.size()) {
+			// 신청가능한지 미리 파악하기
+			// 신청가능한 인원이 있는지 확인
+			// 남은 신청 가져오기
+			List<Apply> temp = new ArrayList<>();
+			for (int i=0;i<applyList.size();i++) {
+				if(i>=index){
+					temp.add(applyList.get(i));
+				}
+			}
+			Map<Long, Integer> collectmap = remainRequestMap.entrySet()
+					.stream()
+					.filter(a -> a.getValue() != 0)
+					.collect(Collectors.toMap(Entry::getKey, longLongEntry -> 0));
+			
+			for(Long remainId:collectmap.keySet()){
+				Optional<Apply> optionalApply = temp.stream()
+						.filter(x -> Objects.equals(x.getDetailWorktime().getId(), remainId)).findFirst();
+				if (optionalApply.isEmpty()) {
+					log.info("필요한 apply를 찾지 못함");
+					return;
+				}
+			}
+			log.info("{} {}", index, applyList.size());
 			Map<Long, Long> copiedRequestMap = new HashMap<>(remainRequestMap);
 			List<Apply> copiedFixedApplies = new ArrayList<>(fixedApplies);
 
