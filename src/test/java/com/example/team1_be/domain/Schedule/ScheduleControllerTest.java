@@ -143,9 +143,10 @@ class ScheduleControllerTest {
 
 	@DisplayName("추천 스케줄 후보 리스팅")
 	@WithMockCustomAdminUser
+	@Sql("recommend.sql")
 	@Test
 	void shouldListRecommendedScheduleCandidates() throws Exception {
-		LocalDate date = LocalDate.parse(BEFOREWEEK);
+		LocalDate date = LocalDate.parse("2023-12-04");
 		ResultActions perform = mvc.perform(
 			get(String.format("/api/schedule/recommend?startWeekDate=%s", date)));
 		perform.andExpect(status().isOk());

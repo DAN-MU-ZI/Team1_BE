@@ -6,6 +6,7 @@ import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.SortedMap;
 import java.util.TreeMap;
 import java.util.stream.Collectors;
@@ -24,17 +25,21 @@ public class ScheduleGenerator {
 	private final List<List<Apply>> generatedApplies;
 	private int limit;
 	private int index;
-	private Map<Long, Long> remainRequestMap;
+	private TreeMap<Long, Long> remainRequestMap;
 	private List<Apply> fixedApplies;
 
 	public ScheduleGenerator(List<Worktime> worktimes, List<Apply> applyList, Map<Long, Long> requestMap) {
 		this.worktimes = worktimes;
 		this.applyList = applyList;
-		this.requestMap = requestMap;
+		this.requestMap = requestMap.entrySet()
+				.stream()
+				.filter(a -> a.getValue() != 0)
+				.collect(Collectors.toMap(Entry::getKey, Entry::getValue));
+
 		this.generatedApplies = new ArrayList<>();
 		this.limit = GEN_LIMIT;
 		this.index = 0;
-		this.remainRequestMap = new HashMap<>(this.requestMap);
+		this.remainRequestMap = new TreeMap<>(this.requestMap);
 		this.fixedApplies = new ArrayList<>();
 	}
 
