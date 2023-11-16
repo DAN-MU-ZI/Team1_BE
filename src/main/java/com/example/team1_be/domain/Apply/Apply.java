@@ -45,7 +45,7 @@ public class Apply extends BaseEntity {
 	@JoinColumn(name = "user_id")
 	private User user;
 
-	@OneToMany(fetch = FetchType.LAZY, mappedBy = "apply")
+	@OneToMany(fetch = FetchType.LAZY, mappedBy = "apply", orphanRemoval = true)
 	private List<RecommendedWorktimeApply> recommendedWorktimeApplies;
 
 	@Builder
