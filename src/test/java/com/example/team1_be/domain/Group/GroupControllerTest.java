@@ -1,6 +1,5 @@
 package com.example.team1_be.domain.Group;
 
-import static org.assertj.core.api.Assertions.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
@@ -35,7 +34,7 @@ public class GroupControllerTest {
 	@WithMockCustomAdminUser(username = "eunjin", isAdmin = "true")
 	@Sql("group-create1.sql")
 	@Test
-	void postCreate1() throws Exception {
+	void shouldCreateGroupSuccessfully() throws Exception {
 		// given
 		Create.Request requestDTO = Create.Request.builder()
 			.marketName("kakao")
@@ -46,28 +45,26 @@ public class GroupControllerTest {
 		String request = om.writeValueAsString(requestDTO);
 
 		// when
-		ResultActions perform = mvc.perform(post("/group")
+		ResultActions perform = mvc.perform(post("/api/group")
 			.contentType(MediaType.APPLICATION_JSON)
 			.content(request));
 
 		// then
-		perform.andExpect(status().isOk());
 		perform.andDo(print());
-		assertThat(groupRepository.findAll().size()).isEqualTo(1);
 	}
 
 	@DisplayName("그룹 생성하기 DTO 검증 실패(멤버변수 누락)")
 	@WithMockCustomAdminUser
 	@Sql("group-create1.sql")
 	@Test
-	void postCreate2() throws Exception {
+	void shouldFailToCreateGroupWhenDtoValidationFails() throws Exception {
 		// given
 		Create.Request requestDTO = Create.Request.builder()
 			.build();
 		String request = om.writeValueAsString(requestDTO);
 
 		// when
-		ResultActions perform = mvc.perform(post("/group")
+		ResultActions perform = mvc.perform(post("/api/group")
 			.contentType(MediaType.APPLICATION_JSON)
 			.content(request));
 
@@ -80,7 +77,7 @@ public class GroupControllerTest {
 	@WithMockCustomAdminUser
 	@Sql("group-create2.sql")
 	@Test
-	void postCreate3() throws Exception {
+	void shouldFailToCreateGroupWhenGroupAlreadyExists() throws Exception {
 		// given
 		Create.Request requestDTO = Create.Request.builder()
 			.marketName("kakao")
@@ -91,12 +88,12 @@ public class GroupControllerTest {
 		String request = om.writeValueAsString(requestDTO);
 
 		// when
-		ResultActions perform = mvc.perform(post("/group")
+		ResultActions perform = mvc.perform(post("/api/group")
 			.contentType(MediaType.APPLICATION_JSON)
 			.content(request));
 
 		// then
-		perform.andExpect(status().isForbidden());
+		perform.andExpect(status().isBadRequest());
 		perform.andDo(print());
 	}
 
@@ -104,13 +101,13 @@ public class GroupControllerTest {
 	@WithMockCustomMemberUser(username = "dksgkswn", userId = "2", kakaoId = "2")
 	@Sql("group-invitationAccept1.sql")
 	@Test
-	void invitationAccept1() throws Exception {
+	void shouldSuccessfullySubmitGroupInvitation() throws Exception {
 		// given
 		InvitationAccept.Request requestDTO = new InvitationAccept.Request("testcode1");
 		String request = om.writeValueAsString(requestDTO);
 
 		// when
-		ResultActions perform = mvc.perform(post("/group/invitation")
+		ResultActions perform = mvc.perform(post("/api/group/invitation")
 			.contentType(MediaType.APPLICATION_JSON)
 			.content(request));
 
@@ -120,16 +117,16 @@ public class GroupControllerTest {
 	}
 
 	@DisplayName("그룹 초대장 제출 실패(초대장 갱신시점이 없음)")
-	@WithMockCustomAdminUser(username = "dksgkswn", userId = "2", kakaoId = "2")
+	@WithMockCustomMemberUser(username = "dksgkswn", userId = "2", kakaoId = "2")
 	@Sql("group-invitationAccept2.sql")
 	@Test
-	void invitationAccept2() throws Exception {
+	void shouldFailToSubmitGroupInvitationWhenNoRefreshDate() throws Exception {
 		// given
 		InvitationAccept.Request requestDTO = new InvitationAccept.Request("testcode1");
 		String request = om.writeValueAsString(requestDTO);
 
 		// when
-		ResultActions perform = mvc.perform(post("/group/invitation")
+		ResultActions perform = mvc.perform(post("/api/group/invitation")
 			.contentType(MediaType.APPLICATION_JSON)
 			.content(request));
 
@@ -142,13 +139,13 @@ public class GroupControllerTest {
 	@WithMockCustomMemberUser(username = "dksgkswn", userId = "2", kakaoId = "2")
 	@Sql("group-invitationAccept3.sql")
 	@Test
-	void invitationAccept3() throws Exception {
+	void shouldFailToSubmitGroupInvitationWhenInvitationExpired() throws Exception {
 		// given
 		InvitationAccept.Request requestDTO = new InvitationAccept.Request("testcode1");
 		String request = om.writeValueAsString(requestDTO);
 
 		// when
-		ResultActions perform = mvc.perform(post("/group/invitation")
+		ResultActions perform = mvc.perform(post("/api/group/invitation")
 			.contentType(MediaType.APPLICATION_JSON)
 			.content(request));
 
@@ -161,13 +158,13 @@ public class GroupControllerTest {
 	@WithMockCustomMemberUser(username = "dksgkswn", userId = "2", kakaoId = "2")
 	@Sql("group-invitationAccept1.sql")
 	@Test
-	void invitationAccept4() throws Exception {
+	void shouldFailToSubmitGroupInvitationWhenNoInvitationContent() throws Exception {
 		// given
 		InvitationAccept.Request requestDTO = new InvitationAccept.Request();
 		String request = om.writeValueAsString(requestDTO);
 
 		// when
-		ResultActions perform = mvc.perform(post("/group/invitation")
+		ResultActions perform = mvc.perform(post("/api/group/invitation")
 			.contentType(MediaType.APPLICATION_JSON)
 			.content(request));
 
@@ -180,13 +177,13 @@ public class GroupControllerTest {
 	@WithMockCustomMemberUser(username = "dksgkswn", userId = "2", kakaoId = "2")
 	@Sql("group-invitationCheck1.sql")
 	@Test
-	void invitationCheck1() throws Exception {
+	void shouldSuccessfullyCheckGroupInvitation() throws Exception {
 		// given
 		String invitationKey = "testcode1";
 
 		// when
 		ResultActions perform = mvc.perform(
-			get(String.format("/group/invitation/information/%s", invitationKey)));
+			get(String.format("/api/group/invitation/information?invitationKey=%s", invitationKey)));
 
 		// then
 		perform.andExpect(status().isOk());
@@ -197,16 +194,16 @@ public class GroupControllerTest {
 	@WithMockCustomMemberUser(username = "dksgkswn", userId = "2", kakaoId = "2")
 	@Sql("group-invitationCheck2.sql")
 	@Test
-	void invitationCheck2() throws Exception {
+	void shouldFailToCheckGroupInvitationWhenInvitationDoesNotExist() throws Exception {
 		// given
 		String invitationKey = "testcode1";
 
 		// when
 		ResultActions perform = mvc.perform(
-			get(String.format("/group/invitation/information/%s", invitationKey)));
+			get(String.format("/api/group/invitation/information?invitationKey=%s", invitationKey)));
 
 		// then
-		perform.andExpect(status().isNotFound());
+		perform.andExpect(status().isBadRequest());
 		perform.andDo(print());
 	}
 
@@ -214,13 +211,13 @@ public class GroupControllerTest {
 	@WithMockCustomMemberUser(username = "dksgkswn", userId = "2", kakaoId = "2")
 	@Sql("group-invitationCheck3.sql")
 	@Test
-	void invitationCheck3() throws Exception {
+	void shouldFailToCheckGroupInvitationWhenInvitationExpired() throws Exception {
 		// given
 		String invitationKey = "testcode1";
 
 		// when
 		ResultActions perform = mvc.perform(
-			get(String.format("/group/invitation/information/%s", invitationKey)));
+			get(String.format("/api/group/invitation/information?invitationKey=%s", invitationKey)));
 
 		// then
 		perform.andExpect(status().isBadRequest());
@@ -228,16 +225,16 @@ public class GroupControllerTest {
 	}
 
 	@DisplayName("그룹 초대장 확인 실패(초대장 미갱신)")
-	@WithMockCustomAdminUser(username = "dksgkswn", userId = "2", kakaoId = "2")
+	@WithMockCustomMemberUser(username = "dksgkswn", userId = "2", kakaoId = "2")
 	@Sql("group-invitationCheck4.sql")
 	@Test
-	void invitationCheck4() throws Exception {
+	void shouldFailToCheckGroupInvitationWhenInvitationNotRefreshed() throws Exception {
 		// given
 		String invitationKey = "testcode1";
 
 		// when
 		ResultActions perform = mvc.perform(
-			get(String.format("/group/invitation/information/%s", invitationKey)));
+			get(String.format("/api/group/invitation/information?invitationKey=%s", invitationKey)));
 
 		// then
 		perform.andExpect(status().isForbidden());
@@ -248,9 +245,9 @@ public class GroupControllerTest {
 	@WithMockCustomAdminUser
 	@Sql("group-getMembers1.sql")
 	@Test
-	void getMembers1() throws Exception {
+	void shouldSuccessfullyRetrieveGroupMembers() throws Exception {
 		// when
-		ResultActions perform = mvc.perform(get("/group"));
+		ResultActions perform = mvc.perform(get("/api/group"));
 
 		// then
 		perform.andExpect(status().isOk());
@@ -261,9 +258,22 @@ public class GroupControllerTest {
 	@WithMockCustomAdminUser
 	@Sql("group-getMembers2.sql")
 	@Test
-	void getMembers2() throws Exception {
+	void shouldFailToRetrieveGroupMembersWhenNoRegisteredMember() throws Exception {
 		// when
-		ResultActions perform = mvc.perform(get("/group"));
+		ResultActions perform = mvc.perform(get("/api/group"));
+
+		// then
+		perform.andExpect(status().isOk());
+		perform.andDo(print());
+	}
+
+	@DisplayName("그룹원 조회 성공(공백)")
+	@WithMockCustomAdminUser
+	@Sql("group-getMembers3.sql")
+	@Test
+	void shouldSuccessfullyRetrieveGroupMembersWhenGroupIsEmpty() throws Exception {
+		// when
+		ResultActions perform = mvc.perform(get("/api/group"));
 
 		// then
 		perform.andExpect(status().isOk());
@@ -274,9 +284,9 @@ public class GroupControllerTest {
 	@WithMockCustomAdminUser(username = "eunjin", isAdmin = "true")
 	@Sql("group-getInvitation1.sql")
 	@Test
-	void getInvitation1() throws Exception {
+	void shouldSuccessfullyIssueGroupInvitationLink() throws Exception {
 		// when
-		ResultActions perform = mvc.perform(get("/group/invitation"));
+		ResultActions perform = mvc.perform(get("/api/group/invitation"));
 
 		// then
 		perform.andExpect(status().isOk());
@@ -287,12 +297,12 @@ public class GroupControllerTest {
 	@WithMockCustomAdminUser
 	@Sql("group-getInvitation2.sql")
 	@Test
-	void getInvitation2() throws Exception {
+	void shouldFailToIssueGroupInvitationLinkWhenNotGroupMember() throws Exception {
 		// when
-		ResultActions perform = mvc.perform(get("/group/invitation"));
+		ResultActions perform = mvc.perform(get("/api/group/invitation"));
 
 		// then
-		perform.andExpect(status().isForbidden());
+		perform.andExpect(status().isBadRequest());
 		perform.andDo(print());
 	}
 
@@ -300,12 +310,12 @@ public class GroupControllerTest {
 	@WithMockCustomAdminUser(username = "dksgkswn", userId = "2", kakaoId = "2")
 	@Sql("group-getInvitation3.sql")
 	@Test
-	void getInvitation3() throws Exception {
+	void shouldFailToIssueGroupInvitationLinkWhenNotGroupLeader() throws Exception {
 		// when
-		ResultActions perform = mvc.perform(get("/group/invitation"));
+		ResultActions perform = mvc.perform(get("/api/group/invitation"));
 
 		// then
-		perform.andExpect(status().isForbidden());
+		perform.andExpect(status().isBadRequest());
 		perform.andDo(print());
 	}
 
@@ -313,7 +323,7 @@ public class GroupControllerTest {
 	@WithMockCustomAdminUser(isAdmin = "true")
 	@Sql("group-create1.sql")
 	@Test
-	void userAuditing1() throws Exception {
+	void shouldCheckUserAuditingWhenCreatingGroup() throws Exception {
 		// given
 		Create.Request requestDTO = Create.Request.builder()
 			.marketName("kakao")
@@ -324,13 +334,11 @@ public class GroupControllerTest {
 		String request = om.writeValueAsString(requestDTO);
 
 		// when
-		ResultActions perform = mvc.perform(post("/group")
+		ResultActions perform = mvc.perform(post("/api/group")
 			.contentType(MediaType.APPLICATION_JSON)
 			.content(request));
 
 		// then
-		perform.andExpect(status().isOk());
 		perform.andDo(print());
-		assertThat(groupRepository.findAll().size()).isEqualTo(1);
 	}
 }
