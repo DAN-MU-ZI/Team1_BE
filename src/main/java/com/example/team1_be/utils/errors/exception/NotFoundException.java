@@ -1,20 +1,29 @@
 package com.example.team1_be.utils.errors.exception;
 
 import com.example.team1_be.utils.ApiUtils;
+import com.example.team1_be.utils.errors.ClientErrorCode;
 import lombok.Getter;
 import org.springframework.http.HttpStatus;
 
 @Getter
 public class NotFoundException extends RuntimeException {
-    public NotFoundException(String message) {
-        super(message);
-    }
+	private ClientErrorCode errorCode;
 
-    public ApiUtils.ApiResult<?> body(){
-        return ApiUtils.error(getMessage(), HttpStatus.NOT_FOUND);
-    }
+	public NotFoundException(String message) {
+		super(message);
+		this.errorCode = ClientErrorCode.UNKNOWN_ERROR;
+	}
 
-    public HttpStatus status(){
-        return HttpStatus.NOT_FOUND;
-    }
+	public NotFoundException(String message, ClientErrorCode errorCode) {
+		super(message);
+		this.errorCode = errorCode;
+	}
+
+	public ApiUtils.ApiResult<?> body() {
+		return ApiUtils.error(getMessage(), errorCode);
+	}
+
+	public HttpStatus status() {
+		return HttpStatus.NOT_FOUND;
+	}
 }

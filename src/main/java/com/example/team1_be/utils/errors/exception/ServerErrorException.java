@@ -1,20 +1,29 @@
 package com.example.team1_be.utils.errors.exception;
 
 import com.example.team1_be.utils.ApiUtils;
+import com.example.team1_be.utils.errors.ClientErrorCode;
 import lombok.Getter;
 import org.springframework.http.HttpStatus;
 
 @Getter
 public class ServerErrorException extends RuntimeException {
-    public ServerErrorException(String message) {
-        super(message);
-    }
+	private ClientErrorCode errorCode;
 
-    public ApiUtils.ApiResult<?> body(){
-        return ApiUtils.error(getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
-    }
+	public ServerErrorException(String message) {
+		super(message);
+		this.errorCode = ClientErrorCode.UNKNOWN_ERROR;
+	}
 
-    public HttpStatus status(){
-        return HttpStatus.INTERNAL_SERVER_ERROR;
-    }
+	public ServerErrorException(String message, ClientErrorCode errorCode) {
+		super(message);
+		this.errorCode = errorCode;
+	}
+
+	public ApiUtils.ApiResult<?> body() {
+		return ApiUtils.error(getMessage(), errorCode);
+	}
+
+	public HttpStatus status() {
+		return HttpStatus.INTERNAL_SERVER_ERROR;
+	}
 }
