@@ -1,31 +1,49 @@
-package com.example.team1_be.utils.security.XSS;
+package com.example.team1_be.utils.security;
 
+import com.example.team1_be.utils.security.XSS.XSSUtils;
+import com.example.team1_be.utils.security.XSS.XssRequestWrapper;
+import com.example.team1_be.utils.security.auth.jwt.JwtProvider;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ArrayNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.fasterxml.jackson.databind.node.TextNode;
 import java.io.IOException;
-import javax.servlet.Filter;
 import javax.servlet.FilterChain;
 import javax.servlet.ServletException;
-import javax.servlet.ServletRequest;
-import javax.servlet.ServletResponse;
 import javax.servlet.http.HttpServletRequest;
-import lombok.RequiredArgsConstructor;
+import javax.servlet.http.HttpServletResponse;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.StringUtils;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.web.filter.OncePerRequestFilter;
 
-@RequiredArgsConstructor
-public class XSSProtectFilter implements Filter {
+public class CombinedFilter extends OncePerRequestFilter {
+	private final JwtProvider jwtProvider;
 	private final ObjectMapper om;
 
-	@Override
-	public void doFilter(ServletRequest request, ServletResponse response, FilterChain chain) throws
-		IOException,
-		ServletException {
+	public CombinedFilter(JwtProvider jwtProvider, ObjectMapper om) {
+		this.jwtProvider = jwtProvider;
+		this.om = om;
+	}
 
-		XssRequestWrapper wrappedRequest = new XssRequestWrapper((HttpServletRequest)request);
+	@Override
+	protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response,
+		FilterChain filterChain) throws ServletException, IOException {
+		// JWT token verification
+		String authorization = request.getHeader("Authorization");
+		String token;
+		if (isAuthorizationValid(authorization)) {
+			token = authorization.substring(7);
+			if (jwtProvider.verify(token)) {
+				Authentication authentication = jwtProvider.getAuthentication(token);
+				SecurityContextHolder.getContext().setAuthentication(authentication);
+			}
+		}
+
+		// XSS protection
+		XssRequestWrapper wrappedRequest = new XssRequestWrapper(request);
 		String body = IOUtils.toString(wrappedRequest.getReader());
 
 		if (!StringUtils.isBlank(body)) {
@@ -35,8 +53,11 @@ public class XSSProtectFilter implements Filter {
 				om.writeValueAsString(root).getBytes());
 		}
 
-		chain.doFilter(wrappedRequest, response);
+		filterChain.doFilter(wrappedRequest, response);
+	}
 
+	private boolean isAuthorizationValid(String authorization) {
+		return authorization != null && authorization.startsWith("Bearer ");
 	}
 
 	private void processNode(JsonNode node) {
