@@ -46,4 +46,14 @@ public class ApplyReadOnlyService {
 		log.info("사용자 ID: {}, 상세 근무 시간 ID: {}에 따른 신청 정보를 조회합니다.", userId, detailWorktimeIds);
 		return repository.findByUserAndDetailWorktimeIds(userId, detailWorktimeIds);
 	}
+
+    public List<Apply> findFixedAppliesByUserAndWeek(Long userId, Long weekId) {
+		log.info("사용자 ID: {}, 주간 ID: {}에 따른 신청 정보를 조회합니다.", userId, weekId);
+		return repository.findByUserAndWeekAndStatus(userId, weekId, ApplyStatus.FIX);
+	}
+
+	public List<Apply> findFixedAppliesByWeek(Long weekId) {
+		log.info("주간 ID: {}에 따른 신청 정보를 조회합니다.", weekId);
+		return repository.findByWeekAndStatus(weekId, ApplyStatus.FIX);
+	}
 }

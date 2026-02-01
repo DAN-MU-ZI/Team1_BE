@@ -1,14 +1,20 @@
 package com.example.team1_be.domain.Apply.Service;
 
+import com.example.team1_be.domain.Schedule.Recommend.WeeklySchedule.RecommendedWeeklySchedule;
+import com.example.team1_be.domain.Schedule.Recommend.WeeklySchedule.RecommendedWeeklyScheduleRepository;
+import com.example.team1_be.domain.Schedule.Recommend.WorktimeApply.RecommendedWorktimeApply;
+import com.example.team1_be.domain.Week.Week;
 import java.time.DayOfWeek;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 import java.util.SortedMap;
 import java.util.TreeMap;
 import java.util.stream.Collectors;
 
+import java.util.stream.Stream;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -17,7 +23,6 @@ import com.example.team1_be.domain.Apply.ApplyStatus;
 import com.example.team1_be.domain.DetailWorktime.DetailWorktime;
 import com.example.team1_be.domain.User.User;
 import com.example.team1_be.domain.Worktime.Worktime;
-import com.example.team1_be.utils.errors.exception.NotFoundException;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -29,7 +34,7 @@ import lombok.extern.slf4j.Slf4j;
 public class ApplyService {
     private final ApplyReadOnlyService readOnlyService;
     private final ApplyWriteOnlyService writeOnlyService;
-
+    private final RecommendedWeeklyScheduleRepository recommendedWeeklyScheduleRepository;
     public List<Apply> findApplies(List<Worktime> worktimes) {
         List<Long> worktimeIds = worktimes.stream()
                 .map(Worktime::getId)
@@ -64,7 +69,6 @@ public class ApplyService {
         List<User> users = readOnlyService.findUsersByWorktimeIdAndApplyStatus(worktime.getId(), status);
         if (users.isEmpty()) {
             log.warn("근무 시간 ID: {}, 상태: {}에 따른 신청자를 찾을 수 없습니다.", worktime.getId(), status);
-            throw new NotFoundException("확정된 신청자를 찾을 수 없습니다.");
         }
         log.info("근무 시간 ID: {}, 상태: {}에 따른 신청자를 조회하였습니다.", worktime.getId(), status);
         return users;
@@ -108,6 +112,15 @@ public class ApplyService {
                 .collect(Collectors.toList());
         List<Apply> appliesToDelete = readOnlyService.findApplyByUserIdAndDetailWorktimeIds(user.getId(),
                 detailWorktimeIds);
+        List<List<RecommendedWorktimeApply>> temp = appliesToDelete.stream()
+                .map(Apply::getRecommendedWorktimeApplies).collect(Collectors.toList());
+        Set<RecommendedWeeklySchedule> tempset = new HashSet<>();
+        for(List<RecommendedWorktimeApply> recommendedWorktimeApplies:temp){
+            for(RecommendedWorktimeApply recommendedWorktimeApply:recommendedWorktimeApplies){
+                tempset.add(recommendedWorktimeApply.getRecommendedWeeklySchedule());
+            }
+        }
+        recommendedWeeklyScheduleRepository.deleteAll(tempset);
         log.info("사용자 ID: {}, 상세 근무 시간 ID: {}에 따른 신청 정보 {} 개를 삭제합니다.", user.getId(), detailWorktimeIds,
                 appliesToDelete.size());
         writeOnlyService.deleteApplies(appliesToDelete);
@@ -116,5 +129,20 @@ public class ApplyService {
     private void createApplies(User user, HashSet<DetailWorktime> detailWorktimes) {
         log.info("사용자 ID: {}에 대하여 신청 정보 {} 개를 생성합니다.", user.getId(), detailWorktimes.size());
         writeOnlyService.registerAppliesForUser(user, new ArrayList<>(detailWorktimes));
+    }
+
+    public List<Worktime> findFixedWorktimeAtCurrentWeek(Week week, User user, Boolean isPersonal) {
+        if (isPersonal) {
+            List<Apply> applies = readOnlyService.findFixedAppliesByUserAndWeek(user.getId(), week.getId());
+            return getWorktimes(applies);
+        }
+
+        List<Apply> applies = readOnlyService.findFixedAppliesByWeek(week.getId());
+        return getWorktimes(applies);
+    }
+
+    private static List<Worktime> getWorktimes(List<Apply> applies) {
+        return applies.stream().map(Apply::getDetailWorktime).map(DetailWorktime::getWorktime)
+                .collect(Collectors.toList());
     }
 }

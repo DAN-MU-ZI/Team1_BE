@@ -29,12 +29,13 @@ public class GetDailyFixedAppliesTest {
 	@Autowired
 	private ObjectMapper om;
 
+	private final String STARTWEEKDATE = "2023-11-13";
 	@DisplayName("요청 성공")
 	@WithMockCustomAdminUser
 	@Test
 	public void shouldHandleScheduleRequestSuccessfully() throws Exception {
 		// given
-		LocalDate date = LocalDate.parse("2023-10-16");
+		LocalDate date = LocalDate.parse(STARTWEEKDATE);
 		mvc.perform(
 				get(String.format("/api/schedule/recommend?startWeekDate=%s", date)))
 			.andExpect(status().isOk())
