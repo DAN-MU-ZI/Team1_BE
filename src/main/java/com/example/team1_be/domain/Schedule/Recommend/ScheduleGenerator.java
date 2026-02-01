@@ -1,11 +1,16 @@
 package com.example.team1_be.domain.Schedule.Recommend;
 
+import com.example.team1_be.domain.DetailWorktime.DetailWorktime;
 import java.time.DayOfWeek;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
+import java.util.Objects;
+import java.util.Optional;
 import java.util.SortedMap;
 import java.util.TreeMap;
 import java.util.stream.Collectors;
@@ -24,23 +29,27 @@ public class ScheduleGenerator {
 	private final List<List<Apply>> generatedApplies;
 	private int limit;
 	private int index;
-	private Map<Long, Long> remainRequestMap;
+	private TreeMap<Long, Long> remainRequestMap;
 	private List<Apply> fixedApplies;
 
 	public ScheduleGenerator(List<Worktime> worktimes, List<Apply> applyList, Map<Long, Long> requestMap) {
 		this.worktimes = worktimes;
 		this.applyList = applyList;
-		this.requestMap = requestMap;
+		this.requestMap = requestMap.entrySet()
+				.stream()
+				.filter(a -> a.getValue() != 0)
+				.collect(Collectors.toMap(Entry::getKey, Entry::getValue));
+
 		this.generatedApplies = new ArrayList<>();
 		this.limit = GEN_LIMIT;
 		this.index = 0;
-		this.remainRequestMap = new HashMap<>(this.requestMap);
+		this.remainRequestMap = new TreeMap<>(this.requestMap);
 		this.fixedApplies = new ArrayList<>();
 	}
 
 	public List<Map<DayOfWeek, SortedMap<Worktime, List<Apply>>>> generateSchedule() {
 		log.info("스케줄을 생성합니다.");
-		recursiveSearch();
+		recursiveSearch(applyList, 0, requestMap, new ArrayList<>());
 
 		List<Map<DayOfWeek, SortedMap<Worktime, List<Apply>>>> result = this.generatedApplies.stream()
 			.map(this::generateDayOfWeekSortedMap)
@@ -50,32 +59,64 @@ public class ScheduleGenerator {
 		return result;
 	}
 
-	private void recursiveSearch() {
-		while (index < applyList.size() && limit > 0) {
+	private void recursiveSearch(List<Apply> applyList, int index, Map<Long, Long> remainRequestMap,
+								 List<Apply> fixedApplies) {
+		if (isSearchComplete(remainRequestMap)) {
+			log.info("완성된 스케줄 존재");
+			if (limit != 0) {
+				log.info("완성된 스케줄 추가");
+				this.generatedApplies.add(new ArrayList<>(fixedApplies));
+				limit--;
+			}
+			return;
+		}
+
+		while (index < applyList.size()) {
+			// 신청가능한지 미리 파악하기
+			// 신청가능한 인원이 있는지 확인
+			// 남은 신청 가져오기
+			List<Apply> temp = new ArrayList<>();
+			for (int i=0;i<applyList.size();i++) {
+				if(i>=index){
+					temp.add(applyList.get(i));
+				}
+			}
+			Map<Long, Integer> collectmap = remainRequestMap.entrySet()
+					.stream()
+					.filter(a -> a.getValue() != 0)
+					.collect(Collectors.toMap(Entry::getKey, longLongEntry -> 0));
+			
+			for(Long remainId:collectmap.keySet()){
+				Optional<Apply> optionalApply = temp.stream()
+						.filter(x -> Objects.equals(x.getDetailWorktime().getId(), remainId)).findFirst();
+				if (optionalApply.isEmpty()) {
+					log.info("필요한 apply를 찾지 못함");
+					return;
+				}
+			}
+			log.info("{} {}", index, applyList.size());
+			Map<Long, Long> copiedRequestMap = new HashMap<>(remainRequestMap);
+			List<Apply> copiedFixedApplies = new ArrayList<>(fixedApplies);
+
 			Apply selectedApply = applyList.get(index);
 			Long selectedWorktimeId = selectedApply.getDetailWorktime().getId();
-			Long selectedAppliers = remainRequestMap.get(selectedWorktimeId);
+			Long selectedAppliers = copiedRequestMap.get(selectedWorktimeId);
 
-			if (selectedAppliers > 0) {
-				remainRequestMap.put(selectedWorktimeId, selectedAppliers - 1);
-				fixedApplies.add(selectedApply);
-				index++;
-				recursiveSearch();
+			if (selectedAppliers != null && selectedAppliers != 0) {
+				copiedRequestMap.put(selectedWorktimeId, selectedAppliers - 1);
+				copiedFixedApplies.add(selectedApply);
+				recursiveSearch(applyList, index + 1, copiedRequestMap, copiedFixedApplies);
 				if (limit == 0) {
 					return;
 				}
 			}
-			index++;
-		}
 
-		if (isSearchComplete()) {
-			generatedApplies.add(new ArrayList<>(fixedApplies));
-			limit--;
+			index++;
 		}
 	}
 
-	private boolean isSearchComplete() {
-		return remainRequestMap.values().stream().mapToInt(Long::intValue).sum() == 0 || index == applyList.size();
+	private boolean isSearchComplete(Map<Long, Long> remainRequestMap) {
+		return remainRequestMap.values().stream().mapToInt(Long::intValue).sum() == 0;
 	}
 
 	private Map<DayOfWeek, SortedMap<Worktime, List<Apply>>> generateDayOfWeekSortedMap(List<Apply> applies) {

@@ -71,13 +71,13 @@ values (1, 'testcode1', 1);
 INSERT INTO notification (`id`, `content`, `type`, `is_read`, `user_id`, `created_by`, `created_at`, `last_updated_by`,
                           `updated_at`)
 VALUES (1, 'ㅁㅁㅁ 님! 새로운 모임을 만들어보세요~', 'START', false, 3, 1, '2022-11-22 12:34:56', 1, '2022-11-22 12:34:56'),
-       (2, 'ㅇㅇㅇ 님! 새로운 알림입니다.', 'START', true, 4, 1, '2023-10-13 10:00:00', 1, '2023-10-13 10:00:00'),
-       (3, 'ㅇㅇㅇ 님! 새로운 알림입니다.', 'START', true, 3, 1, '2023-10-13 10:00:00', 1, '2023-10-13 10:00:00'),
-       (4, 'ㅁㅁ 님! 새로운 모임을 만들어보세요~', 'START', false, 2, 1, '2023-10-13 10:00:00', 1, '2023-10-13 10:00:00');
+       (2, 'ㅇㅇㅇ 님! 새로운 알림입니다.', 'START', true, 4, 1, '2023-11-13 10:00:00', 1, '2023-11-13 10:00:00'),
+       (3, 'ㅇㅇㅇ 님! 새로운 알림입니다.', 'START', true, 3, 1, '2023-11-13 10:00:00', 1, '2023-11-13 10:00:00'),
+       (4, 'ㅁㅁ 님! 새로운 모임을 만들어보세요~', 'START', false, 2, 1, '2023-11-13 10:00:00', 1, '2023-11-13 10:00:00');
 
 insert into week(`id`, `status`, `start_date`, `group_id`)
-values (1, 'ENDED', '2023-10-09', 1),
-       (2, 'STARTED', '2023-10-16', 1);
+values (1, 'ENDED', '2023-11-13', 1),
+       (2, 'STARTED', '2023-11-20', 1);
 
 -- first week schedule
 insert into worktime(`id`, `title`, `start_time`, `end_time`, `week_id`)
@@ -94,45 +94,45 @@ values (4, '오픈', '00:00:00', '06:00:00', 2),
 -- -- 1st week schedule
 -- monday
 insert into detail_worktime(`id`, `date`, `day_of_week`, `amount`, `worktime_id`)
-values (1, '2023-10-09', 0, 3, 1),
-       (2, '2023-10-09', 0, 2, 2),
-       (3, '2023-10-09', 0, 1, 3);
+values (1, '2023-11-13', 0, 3, 1),
+       (2, '2023-11-13', 0, 2, 2),
+       (3, '2023-11-13', 0, 1, 3);
 
 -- tuesday
 insert into detail_worktime(`id`, `date`, `day_of_week`, `amount`, `worktime_id`)
-values (4, '2023-10-10', 1, 2, 1),
-       (5, '2023-10-10', 1, 2, 2),
-       (6, '2023-10-10', 1, 2, 3);
+values (4, '2023-11-14', 1, 2, 1),
+       (5, '2023-11-14', 1, 2, 2),
+       (6, '2023-11-14', 1, 2, 3);
 
 -- wednesday
 insert into detail_worktime(`id`, `date`, `day_of_week`, `amount`, `worktime_id`)
-values (7, '2023-10-11', 2, 3, 1),
-       (8, '2023-10-11', 2, 3, 2),
-       (9, '2023-10-11', 2, 0, 3);
+values (7, '2023-11-15', 2, 3, 1),
+       (8, '2023-11-15', 2, 3, 2),
+       (9, '2023-11-15', 2, 0, 3);
 
 -- thursday
 insert into detail_worktime(`id`, `date`, `day_of_week`, `amount`, `worktime_id`)
-values (10, '2023-10-12', 3, 1, 1),
-       (11, '2023-10-12', 3, 1, 2),
-       (12, '2023-10-12', 3, 1, 3);
+values (10, '2023-11-16', 3, 1, 1),
+       (11, '2023-11-16', 3, 1, 2),
+       (12, '2023-11-16', 3, 1, 3);
 
 -- friday
 insert into detail_worktime(`id`, `date`, `day_of_week`, `amount`, `worktime_id`)
-values (13, '2023-10-13', 4, 1, 1),
-       (14, '2023-10-13', 4, 2, 2),
-       (15, '2023-10-13', 4, 1, 3);
+values (13, '2023-11-17', 4, 1, 1),
+       (14, '2023-11-17', 4, 2, 2),
+       (15, '2023-11-17', 4, 1, 3);
 
 -- saturday
 insert into detail_worktime(`id`, `date`, `day_of_week`, `amount`, `worktime_id`)
-values (16, '2023-10-14', 5, 1, 1),
-       (17, '2023-10-14', 5, 1, 2),
-       (18, '2023-10-14', 5, 0, 3);
+values (16, '2023-11-18', 5, 1, 1),
+       (17, '2023-11-18', 5, 1, 2),
+       (18, '2023-11-18', 5, 0, 3);
 
 -- sunday
 insert into detail_worktime(`id`, `date`, `day_of_week`, `amount`, `worktime_id`)
-values (19, '2023-10-15', 6, 2, 1),
-       (20, '2023-10-15', 6, 2, 2),
-       (21, '2023-10-15', 6, 0, 3);
+values (19, '2023-11-19', 6, 2, 1),
+       (20, '2023-11-19', 6, 2, 2),
+       (21, '2023-11-19', 6, 0, 3);
 
 -- 1st member's applies
 insert into apply (`id`, `status`, `user_id`, `detail_worktime_id`)
@@ -243,45 +243,45 @@ VALUES (56, 'REMAIN', 6, 1),
 -- -- 2nd week schedule
 -- monday
 insert into detail_worktime(`id`, `date`, `day_of_week`, `amount`, `worktime_id`)
-values (22, '2023-10-16', 0, 3, 4),
-       (23, '2023-10-16', 0, 2, 5),
-       (24, '2023-10-16', 0, 1, 6);
+values (22, '2023-11-20', 0, 3, 4),
+       (23, '2023-11-20', 0, 2, 5),
+       (24, '2023-11-20', 0, 1, 6);
 
 -- tuesday
 insert into detail_worktime(`id`, `date`, `day_of_week`, `amount`, `worktime_id`)
-values (25, '2023-10-17', 1, 2, 4),
-       (26, '2023-10-17', 1, 2, 5),
-       (27, '2023-10-17', 1, 2, 6);
+values (25, '2023-11-21', 1, 2, 4),
+       (26, '2023-11-21', 1, 2, 5),
+       (27, '2023-11-21', 1, 2, 6);
 
 -- wednesday
 insert into detail_worktime(`id`, `date`, `day_of_week`, `amount`, `worktime_id`)
-values (28, '2023-10-18', 2, 3, 4),
-       (29, '2023-10-18', 2, 3, 5),
-       (30, '2023-10-18', 2, 0, 6);
+values (28, '2023-11-22', 2, 3, 4),
+       (29, '2023-11-22', 2, 3, 5),
+       (30, '2023-11-22', 2, 0, 6);
 
 -- thursday
 insert into detail_worktime(`id`, `date`, `day_of_week`, `amount`, `worktime_id`)
-values (31, '2023-10-19', 3, 1, 4),
-       (32, '2023-10-19', 3, 1, 5),
-       (33, '2023-10-19', 3, 1, 6);
+values (31, '2023-11-23', 3, 1, 4),
+       (32, '2023-11-23', 3, 1, 5),
+       (33, '2023-11-23', 3, 1, 6);
 
 -- friday
 insert into detail_worktime(`id`, `date`, `day_of_week`, `amount`, `worktime_id`)
-values (34, '2023-10-20', 4, 1, 4),
-       (35, '2023-10-20', 4, 2, 5),
-       (36, '2023-10-20', 4, 1, 6);
+values (34, '2023-11-24', 4, 1, 4),
+       (35, '2023-11-24', 4, 2, 5),
+       (36, '2023-11-24', 4, 1, 6);
 
 -- saturday
 insert into detail_worktime(`id`, `date`, `day_of_week`, `amount`, `worktime_id`)
-values (37, '2023-10-21', 5, 1, 4),
-       (38, '2023-10-21', 5, 1, 5),
-       (39, '2023-10-21', 5, 0, 6);
+values (37, '2023-11-25', 5, 1, 4),
+       (38, '2023-11-25', 5, 1, 5),
+       (39, '2023-11-25', 5, 0, 6);
 
 -- sunday
 insert into detail_worktime(`id`, `date`, `day_of_week`, `amount`, `worktime_id`)
-values (40, '2023-10-22', 6, 2, 4),
-       (41, '2023-10-22', 6, 2, 5),
-       (42, '2023-10-22', 6, 0, 6);
+values (40, '2023-11-26', 6, 2, 4),
+       (41, '2023-11-26', 6, 2, 5),
+       (42, '2023-11-26', 6, 0, 6);
 
 -- 1st member's applies
 insert into apply (`id`, `status`, `user_id`, `detail_worktime_id`)

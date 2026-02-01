@@ -37,11 +37,13 @@ public class GetAppliesTest {
 	@Autowired
 	private ObjectMapper om;
 
+	private final String STARTWEEKDATE = "2023-11-13";
+
 	@DisplayName("스케줄 신청/수정 조회 요청 성공")
 	@WithMockCustomMemberUser(userId = "2")
 	@Test
 	void shouldRetrieveScheduleApplicationSuccessfully() throws Exception {
-		LocalDate startWeekDate = LocalDate.parse("2023-10-16");
+		LocalDate startWeekDate = LocalDate.parse(STARTWEEKDATE);
 		String URL = String.format("/api/schedule/application?startWeekDate=%s", startWeekDate);
 		ResultActions perform = mvc.perform(get(URL));
 		perform.andExpect(status().isOk());
@@ -52,7 +54,7 @@ public class GetAppliesTest {
 	@WithMockCustomMemberUser(userId = "2")
 	@Test
 	void shouldCheckScheduleApplicationDto() throws Exception {
-		LocalDate weekStartDate = LocalDate.parse("2023-10-16");
+		LocalDate weekStartDate = LocalDate.parse(STARTWEEKDATE);
 
 		List<SortedMap<Worktime, Boolean>> weeklyApplies = new ArrayList<>();
 		List<Worktime> worktimes = new ArrayList<>();
@@ -78,7 +80,7 @@ public class GetAppliesTest {
 	@Test
 	void shouldSubmitScheduleApplicationWithDto() throws Exception {
 		// given
-		LocalDate weekStartDate = LocalDate.parse("2023-10-16");
+		LocalDate weekStartDate = LocalDate.parse(STARTWEEKDATE);
 
 		List<SortedMap<Worktime, Boolean>> weeklyApplies = new ArrayList<>();
 		List<Worktime> worktimes = new ArrayList<>();

@@ -1,5 +1,8 @@
 package com.example.team1_be.domain.Week.Service;
 
+import static com.example.team1_be.domain.Week.WeekRecruitmentStatus.ENDED;
+import static com.example.team1_be.domain.Week.WeekRecruitmentStatus.STARTED;
+
 import java.time.LocalDate;
 import java.util.List;
 
@@ -53,8 +56,9 @@ public class WeekService {
     public Week findByGroupAndStartDateOrNull(Group group, LocalDate startDate) {
         log.info("그룹과 시작 날짜에 따른 주차를 찾습니다.");
         Week week = readOnlyService.findByGroupAndStartDate(group, startDate);
-        if (null == week) {
+        if (null == week || week.getStatus().equals(STARTED)) {
             log.info("해당 주차를 찾을 수 없습니다.");
+            return null;
         }
         return week;
     }
@@ -72,7 +76,7 @@ public class WeekService {
 
     public Week findLatestByGroup(Group group) {
         log.info("그룹의 최신 주차를 찾습니다.");
-        Week week = readOnlyService.findByGroupAndStatus(group, WeekRecruitmentStatus.ENDED);
+        Week week = readOnlyService.findByGroupAndStatus(group, ENDED);
         log.info("그룹의 최신 주차를 찾았습니다.");
         return week;
     }
@@ -91,11 +95,11 @@ public class WeekService {
 
     public void checkAppliable(User user, Week week) {
         log.info("주차가 적용 가능한지 확인합니다.");
-        if (user.getIsAdmin() && week.getStatus().equals(WeekRecruitmentStatus.ENDED)) {
+        if (user.getIsAdmin() && week.getStatus().equals(ENDED)) {
             log.info("이미 마감된 스케줄입니다.");
             throw new BadRequestException("이미 마감된 스케줄입니다.", ClientErrorCode.RECRUITMENT_CLOSED);
         }
-        if (!user.getIsAdmin() && week.getStatus().equals(WeekRecruitmentStatus.STARTED)) {
+        if (!user.getIsAdmin() && week.getStatus().equals(STARTED)) {
             log.info("확정된 스케줄이 아닙니다.");
             throw new NotFoundException("확정된 스케줄이 아닙니다.");
         }
