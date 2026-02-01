@@ -27,13 +27,28 @@ public class LoadLatestSchedule {
 	@Autowired
 	private ObjectMapper om;
 
-	@DisplayName("개인 확정 스케줄 조회 성공")
+	private final String BEFOREWEEK = "2023-11-13";
+	private final String STRATWEEKDATE = "2023-11-20";
+
+	@DisplayName("최근 스케줄 조회 성공")
 	@WithMockCustomAdminUser(userId = "2")
 	@Test
-	void test1() throws Exception {
-		LocalDate startWeekDate = LocalDate.parse("2023-10-16");
+	void shouldRetrieveRecentScheduleSuccessfully() throws Exception {
+		LocalDate startWeekDate = LocalDate.parse(STRATWEEKDATE);
 		ResultActions perform = mvc.perform(
-			get(String.format("/schedule/worktime/%s", startWeekDate)));
+			get(String.format("/api/schedule/worktime?startWeekDate=%s", startWeekDate)));
+		perform.andExpect(status().isOk());
+		perform.andDo(print());
+	}
+
+	@DisplayName("최근 스케줄 조회 실패시 빈배열 제공")
+	@WithMockCustomAdminUser(userId = "2")
+	@Sql("emptyRecentSchedule.sql")
+	@Test
+	void shouldRetrieveEmptyRecentScheduleSuccessfully() throws Exception {
+		LocalDate startWeekDate = LocalDate.parse(BEFOREWEEK);
+		ResultActions perform = mvc.perform(
+				get(String.format("/api/schedule/worktime?startWeekDate=%s", startWeekDate)));
 		perform.andExpect(status().isOk());
 		perform.andDo(print());
 	}

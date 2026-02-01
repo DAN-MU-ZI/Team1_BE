@@ -53,11 +53,11 @@ public class RecommendSchedule {
 
 			@Getter
 			private class Worker {
-				private final Long memberId;
+				private final Long userId;
 				private final String name;
 
 				public Worker(User user) {
-					this.memberId = user.getId();
+					this.userId = user.getId();
 					this.name = user.getName();
 				}
 			}

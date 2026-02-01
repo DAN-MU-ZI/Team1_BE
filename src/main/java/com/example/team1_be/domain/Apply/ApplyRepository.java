@@ -14,7 +14,8 @@ import com.example.team1_be.domain.User.User;
 public interface ApplyRepository extends JpaRepository<Apply, Long> {
 	@Query("select a " +
 		"from Apply a " +
-		"where a.detailWorktime.worktime.id in (:detailWorktimeIds)")
+		"where a.detailWorktime.worktime.id in (:detailWorktimeIds) "
+			+ "and a.detailWorktime.amount != 0")
 	List<Apply> findAppliesByWorktimeIds(@Param("detailWorktimeIds") List<Long> detailWorktimeIds);
 
 	@Query("select a "
@@ -47,4 +48,17 @@ public interface ApplyRepository extends JpaRepository<Apply, Long> {
 		+ "and a.detailWorktime.id in (:detailWorktimeIds)")
 	List<Apply> findByUserAndDetailWorktimeIds(@Param("userId") Long userId,
 		@Param("detailWorktimeIds") List<Long> worktimeids);
+
+	@Query("select a "
+			+ "from Apply a "
+			+ "where a.user.id = :userId "
+			+ "and a.detailWorktime.worktime.week.id = :weekId "
+			+ "and a.status = :applyStatus")
+    List<Apply> findByUserAndWeekAndStatus(@Param("userId")Long userId, @Param("weekId")Long weekId, @Param("applyStatus")ApplyStatus fix);
+
+	@Query("select a "
+			+ "from Apply a "
+			+ "where a.detailWorktime.worktime.week.id = :weekId "
+			+ "and a.status = :applyStatus")
+	List<Apply> findByWeekAndStatus(@Param("weekId")Long weekId, @Param("applyStatus")ApplyStatus fix);
 }

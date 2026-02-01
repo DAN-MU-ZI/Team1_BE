@@ -30,9 +30,11 @@ class WeekRepositoryTest extends BaseTest {
 			worktimeRepository, detailWorktimeRepository, substituteRepository, em);
 	}
 
+	private final String DATE = "2023-11-13";
+
 	@DisplayName("주간 일정 조회")
 	@Test
-	void test1() {
+	void shouldRetrieveWeeklySchedule() {
 		assertThat(weekRepository.findById(1L).orElse(null))
 			.isNotEqualTo(null);
 		assertThat(weekRepository.findById(1L).orElse(null).getStatus())
@@ -41,15 +43,15 @@ class WeekRepositoryTest extends BaseTest {
 
 	@DisplayName("시작일, 스케줄, 상태 기반 조회 성공")
 	@Test
-	void test2() {
-		assertThat(weekRepository.findByScheduleIdStartDateAndStatus(1L, LocalDate.parse("2023-10-09"), ENDED)
+	void shouldRetrieveBasedOnStartDateScheduleAndStatus() {
+		assertThat(weekRepository.findByScheduleIdStartDateAndStatus(1L, LocalDate.parse(DATE), ENDED)
 			.orElse(null)).isNotEqualTo(null);
 	}
 
 	@DisplayName("시작일, 스케줄, 상태 기반 조회 실패")
 	@Test
-	void test3() {
-		assertThat(weekRepository.findByScheduleIdStartDateAndStatus(1L, LocalDate.parse("2023-10-09"), STARTED)
+	void shouldFailToRetrieveBasedOnStartDateScheduleAndStatus() {
+		assertThat(weekRepository.findByScheduleIdStartDateAndStatus(1L, LocalDate.parse(DATE), STARTED)
 			.orElse(null)).isEqualTo(null);
 	}
 }

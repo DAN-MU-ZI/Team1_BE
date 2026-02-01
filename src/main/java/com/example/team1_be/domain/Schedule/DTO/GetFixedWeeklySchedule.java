@@ -17,7 +17,7 @@ public class GetFixedWeeklySchedule {
 		private final List<DailySchedule> schedule;
 		private final WorkSummary work_summary;
 
-		public Response(SortedMap<LocalDate, List<Apply>> memberWorktimes) {
+		public Response(List<Worktime> fixedWorktimeAtCurrentWeek, SortedMap<LocalDate, List<Apply>> memberWorktimes) {
 			this.schedule = new ArrayList<>();
 			double totalWorktime = 0;
 			for (LocalDate date : memberWorktimes.keySet()) {
@@ -32,7 +32,13 @@ public class GetFixedWeeklySchedule {
 				}
 				schedule.add(new DailySchedule(date, applyTitles));
 			}
-			this.work_summary = new WorkSummary(totalWorktime / memberWorktimes.size() * 7, totalWorktime);
+
+			double weeklyWorktime = 0;
+			for (Worktime worktime : fixedWorktimeAtCurrentWeek) {
+				weeklyWorktime += Duration.between(worktime.getStartTime(), worktime.getEndTime()).toHours();
+			}
+
+			this.work_summary = new WorkSummary(weeklyWorktime, totalWorktime);
 		}
 
 		@Getter

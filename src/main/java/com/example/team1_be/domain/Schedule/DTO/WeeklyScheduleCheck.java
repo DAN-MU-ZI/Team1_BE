@@ -4,6 +4,7 @@ import java.time.LocalTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.TreeMap;
 import java.util.stream.Collectors;
 
 import javax.validation.constraints.NotBlank;
@@ -29,7 +30,7 @@ public class WeeklyScheduleCheck {
 		private List<Template> template;
 		private List<List<WorkerStatus>> applyStatus;
 
-		public Response(List<Worktime> worktimes, Map<String, List<Map<Worktime, List<Apply>>>> applyStatus) {
+		public Response(List<Worktime> worktimes, TreeMap<String, List<Map<Worktime, List<Apply>>>> applyStatus) {
 			this.template = new ArrayList<>();
 			worktimes.forEach(worktime -> template.add(new Template(worktime)));
 

@@ -29,21 +29,22 @@ public class GetDailyFixedAppliesTest {
 	@Autowired
 	private ObjectMapper om;
 
+	private final String STARTWEEKDATE = "2023-11-13";
 	@DisplayName("요청 성공")
 	@WithMockCustomAdminUser
 	@Test
-	public void test1() throws Exception {
+	public void shouldHandleScheduleRequestSuccessfully() throws Exception {
 		// given
-		LocalDate date = LocalDate.parse("2023-10-16");
+		LocalDate date = LocalDate.parse(STARTWEEKDATE);
 		mvc.perform(
-				get(String.format("/schedule/recommend/%s", date)))
+				get(String.format("/api/schedule/recommend?startWeekDate=%s", date)))
 			.andExpect(status().isOk())
 			.andDo(print());
 
 		FixSchedule.Request requestDTO = new FixSchedule.Request(date, 1);
 		String request = om.writeValueAsString(requestDTO);
 		mvc.perform(
-				post("/schedule/fix")
+				post("/api/schedule/fix")
 					.contentType(MediaType.APPLICATION_JSON)
 					.content(request))
 			.andExpect(status().isOk())
@@ -51,7 +52,7 @@ public class GetDailyFixedAppliesTest {
 
 		// when
 		ResultActions perform = mvc.perform(
-			get(String.format("/schedule/fix/day/%s", date)));
+			get(String.format("/api/schedule/fix/day?selectedDate=%s", date)));
 		perform.andExpect(status().isOk());
 		perform.andDo(print());
 	}
@@ -59,10 +60,10 @@ public class GetDailyFixedAppliesTest {
 	@DisplayName("요청 실패(잘못된 양식의 주소 요청")
 	@WithMockCustomAdminUser
 	@Test
-	public void test2() throws Exception {
+	public void shouldFailToHandleScheduleRequestWithWrongDateFormat() throws Exception {
 		String wrongDateFormat = "2023-22";
 		ResultActions perform = mvc.perform(
-			get(String.format("/schedule/fix/day/%s", wrongDateFormat)));
+			get(String.format("/api/schedule/fix/day?selectedDate=%s", wrongDateFormat)));
 		perform.andExpect(status().isBadRequest());
 	}
 }

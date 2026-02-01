@@ -27,16 +27,20 @@ public class GetWeekStatus {
 	@Autowired
 	private ObjectMapper om;
 
+	private final String BEFOREWEEK = "2023-11-13";
+	private final String STRATWEEKDATE = "2023-11-20";
+	private final String NEXTWEEKDATE = "2023-11-27";
+
 	@DisplayName("주별 상태 조회 closed")
 	@WithMockCustomAdminUser
 	@Test
-	void getWeekStatus1() throws Exception {
+	void shouldRetrieveClosedWeeklyStatus() throws Exception {
 		// given
-		LocalDate startDate = LocalDate.parse("2023-10-09");
+		LocalDate startDate = LocalDate.parse(BEFOREWEEK);
 
 		// when
 		ResultActions perform = mvc.perform(
-			get(String.format("/schedule/status/%s", startDate)));
+			get(String.format("/api/schedule/status?startWeekDate=%s", startDate)));
 
 		// then
 		perform.andExpect(status().isOk());
@@ -46,13 +50,13 @@ public class GetWeekStatus {
 	@DisplayName("주별 상태 조회 inProgress")
 	@WithMockCustomAdminUser
 	@Test
-	void getWeekStatus2() throws Exception {
+	void shouldRetrieveInProgressWeeklyStatus() throws Exception {
 		// given
-		LocalDate startDate = LocalDate.parse("2023-10-16");
+		LocalDate startDate = LocalDate.parse(STRATWEEKDATE);
 
 		// when
 		ResultActions perform = mvc.perform(
-			get(String.format("/schedule/status/%s", startDate)));
+			get(String.format("/api/schedule/status?startWeekDate=%s", startDate)));
 
 		// then
 		perform.andExpect(status().isOk());
@@ -62,13 +66,13 @@ public class GetWeekStatus {
 	@DisplayName("주별 상태 조회 allocatable")
 	@WithMockCustomAdminUser
 	@Test
-	void getWeekStatus3() throws Exception {
+	void shouldRetrieveAllocatableWeeklyStatus() throws Exception {
 		// given
-		LocalDate startDate = LocalDate.parse("2023-10-23");
+		LocalDate startDate = LocalDate.parse(NEXTWEEKDATE);
 
 		// when
 		ResultActions perform = mvc.perform(
-			get(String.format("/schedule/status/%s", startDate)));
+			get(String.format("/api/schedule/status?startWeekDate=%s", startDate)));
 
 		// then
 		perform.andExpect(status().isOk());

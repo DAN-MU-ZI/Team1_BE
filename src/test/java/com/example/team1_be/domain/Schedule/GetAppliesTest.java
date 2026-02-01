@@ -8,6 +8,7 @@ import java.time.DayOfWeek;
 import java.time.LocalDate;
 import java.time.LocalTime;
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.List;
 import java.util.SortedMap;
 import java.util.TreeMap;
@@ -36,12 +37,14 @@ public class GetAppliesTest {
 	@Autowired
 	private ObjectMapper om;
 
+	private final String STARTWEEKDATE = "2023-11-13";
+
 	@DisplayName("스케줄 신청/수정 조회 요청 성공")
 	@WithMockCustomMemberUser(userId = "2")
 	@Test
-	void test1() throws Exception {
-		LocalDate startWeekDate = LocalDate.parse("2023-10-16");
-		String URL = String.format("/schedule/application/%s", startWeekDate);
+	void shouldRetrieveScheduleApplicationSuccessfully() throws Exception {
+		LocalDate startWeekDate = LocalDate.parse(STARTWEEKDATE);
+		String URL = String.format("/api/schedule/application?startWeekDate=%s", startWeekDate);
 		ResultActions perform = mvc.perform(get(URL));
 		perform.andExpect(status().isOk());
 		perform.andDo(print());
@@ -50,8 +53,8 @@ public class GetAppliesTest {
 	@DisplayName("스케줄 신청/수정 제출 DTO 확인")
 	@WithMockCustomMemberUser(userId = "2")
 	@Test
-	void test2() throws Exception {
-		LocalDate weekStartDate = LocalDate.parse("2023-10-16");
+	void shouldCheckScheduleApplicationDto() throws Exception {
+		LocalDate weekStartDate = LocalDate.parse(STARTWEEKDATE);
 
 		List<SortedMap<Worktime, Boolean>> weeklyApplies = new ArrayList<>();
 		List<Worktime> worktimes = new ArrayList<>();
@@ -61,7 +64,7 @@ public class GetAppliesTest {
 
 		for (DayOfWeek day : DayOfWeek.values()) {
 			SortedMap<Worktime, Boolean> dailyApplies = new TreeMap<>(
-				(s1, s2) -> s1.getStartTime().compareTo(s2.getStartTime()));
+				Comparator.comparing(Worktime::getStartTime));
 			for (Worktime worktime : worktimes) {
 				dailyApplies.put(worktime, day.ordinal() % 2 == 1);
 			}
@@ -73,11 +76,11 @@ public class GetAppliesTest {
 	}
 
 	@DisplayName("스케줄 신청/수정 제출 DTO 포함 요청")
-	@WithMockCustomMemberUser(userId = "2")
+	@WithMockCustomMemberUser(userId = "7")
 	@Test
-	void test3() throws Exception {
+	void shouldSubmitScheduleApplicationWithDto() throws Exception {
 		// given
-		LocalDate weekStartDate = LocalDate.parse("2023-10-16");
+		LocalDate weekStartDate = LocalDate.parse(STARTWEEKDATE);
 
 		List<SortedMap<Worktime, Boolean>> weeklyApplies = new ArrayList<>();
 		List<Worktime> worktimes = new ArrayList<>();
@@ -87,7 +90,7 @@ public class GetAppliesTest {
 
 		for (DayOfWeek day : DayOfWeek.values()) {
 			SortedMap<Worktime, Boolean> dailyApplies = new TreeMap<>(
-				(s1, s2) -> s1.getStartTime().compareTo(s2.getStartTime()));
+				Comparator.comparing(Worktime::getStartTime));
 			for (Worktime worktime : worktimes) {
 				dailyApplies.put(worktime, day.ordinal() % 2 == 1);
 			}
@@ -99,8 +102,9 @@ public class GetAppliesTest {
 
 		// when
 		ResultActions perform = mvc.perform(
-			put("/schedule/application").contentType(MediaType.APPLICATION_JSON).content(DTO));
+			put("/api/schedule/application").contentType(MediaType.APPLICATION_JSON).content(DTO));
 		perform.andExpect(status().isOk());
 		perform.andDo(print());
+		System.out.println(DTO);
 	}
 }

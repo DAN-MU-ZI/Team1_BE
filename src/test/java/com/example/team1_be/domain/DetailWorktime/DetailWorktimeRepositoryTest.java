@@ -37,10 +37,12 @@ class DetailWorktimeRepositoryTest extends BaseTest {
 			worktimeRepository, detailWorktimeRepository, substituteRepository, em);
 	}
 
+	private final String DATE = "2023-11-13";
+
 	@DisplayName("worktime과 date기반 조회")
 	@Test
-	void test() {
-		LocalDate startWeekDate = LocalDate.parse("2023-10-09");
+	void shouldFindWorktimesAndDetailWorktimesBasedOnDate() {
+		LocalDate startWeekDate = LocalDate.parse(DATE);
 		Group group = groupRepository.findById(1L).orElse(null);
 		List<Worktime> worktimes = worktimeRepository.findByDate(group.getId(), startWeekDate);
 		assertThat(worktimes.size()).isNotEqualTo(0);

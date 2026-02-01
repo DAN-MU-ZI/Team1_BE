@@ -13,30 +13,38 @@ import com.example.team1_be.domain.DetailWorktime.DetailWorktime;
 import com.example.team1_be.domain.User.User;
 
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 
+@Slf4j
 @Service
 @RequiredArgsConstructor
 @Transactional
 public class ApplyWriteOnlyService {
 	private final ApplyRepository repository;
 
-	public void deleteAll(List<Apply> appliesToDelete) {
+	public void deleteApplies(List<Apply> appliesToDelete) {
+		log.info("{}개의 신청 정보를 삭제합니다.", appliesToDelete.size());
 		repository.deleteAll(appliesToDelete);
 	}
 
-	public void createApplies(User user, List<DetailWorktime> appliesToCreate) {
-		List<Apply> applies = appliesToCreate.stream()
+	public void registerAppliesForUser(User user, List<DetailWorktime> detailWorktimes) {
+		List<Apply> applies = createAppliesForDetailWorktimes(user, detailWorktimes);
+		log.info("사용자 ID: {}에 대한 {}개의 신청 정보를 생성합니다.", user.getId(), applies.size());
+		registerAppliesForUser(applies);
+	}
+
+	private List<Apply> createAppliesForDetailWorktimes(User user, List<DetailWorktime> detailWorktimes) {
+		return detailWorktimes.stream()
 			.map(detailWorktime -> Apply.builder()
 				.status(ApplyStatus.REMAIN)
 				.user(user)
 				.detailWorktime(detailWorktime)
 				.build())
-			.collect(
-				Collectors.toList());
-		createApplies(applies);
+			.collect(Collectors.toList());
 	}
 
-	public void createApplies(List<Apply> applies) {
+	public void registerAppliesForUser(List<Apply> applies) {
+		log.info("{}개의 신청 정보를 생성합니다.", applies.size());
 		repository.saveAll(applies);
 	}
 }

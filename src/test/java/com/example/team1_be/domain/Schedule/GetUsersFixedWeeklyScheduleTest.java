@@ -27,13 +27,14 @@ public class GetUsersFixedWeeklyScheduleTest {
 	@Autowired
 	private ObjectMapper om;
 
+	private final String CURRENTYEARMONTH = "2023-11";
 	@DisplayName("개인 확정 스케줄 조회 성공")
 	@WithMockCustomAdminUser(userId = "2")
 	@Test
-	void GetUsersFixedWeeklySchedule1() throws Exception {
-		YearMonth month = YearMonth.parse("2023-10");
+	void shouldRetrieveUsersFixedWeeklyScheduleSuccessfully() throws Exception {
+		YearMonth month = YearMonth.parse(CURRENTYEARMONTH);
 		ResultActions perform = mvc.perform(
-			get(String.format("/schedule/fix/month/%s", month)));
+			get(String.format("/api/schedule/fix/month?month=%s", month)));
 		perform.andExpect(status().isOk());
 		perform.andDo(print());
 	}
@@ -41,9 +42,9 @@ public class GetUsersFixedWeeklyScheduleTest {
 	@DisplayName("개인 확정 스케줄 조회 실패(파라미터 에러)")
 	@WithMockCustomAdminUser(userId = "2")
 	@Test
-	void GetUsersFixedWeeklySchedule2() throws Exception {
+	void shouldFailToRetrieveUsersFixedWeeklyScheduleDueToParameterError() throws Exception {
 		ResultActions perform = mvc.perform(
-			get(String.format("/schedule/fix/month/%s", "2023")));
+			get(String.format("/api/schedule/fix/month?month=%s", "2023")));
 		perform.andExpect(status().isBadRequest());
 		perform.andDo(print());
 	}
