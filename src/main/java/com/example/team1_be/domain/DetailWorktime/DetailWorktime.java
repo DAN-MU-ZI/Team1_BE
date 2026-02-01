@@ -1,6 +1,7 @@
-package com.example.team1_be.domain.Worktime;
+package com.example.team1_be.domain.DetailWorktime;
 
-import java.time.LocalTime;
+import java.time.DayOfWeek;
+import java.time.LocalDate;
 import java.util.List;
 
 import javax.persistence.Entity;
@@ -14,8 +15,8 @@ import javax.persistence.OneToMany;
 import javax.persistence.Table;
 import javax.validation.constraints.NotNull;
 
-import com.example.team1_be.domain.DetailWorktime.DetailWorktime;
-import com.example.team1_be.domain.Week.Week;
+import com.example.team1_be.domain.Apply.Apply;
+import com.example.team1_be.domain.Worktime.Worktime;
 import com.example.team1_be.utils.audit.BaseEntity;
 
 import lombok.Builder;
@@ -26,39 +27,35 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 @Getter
 @Table
-public class Worktime extends BaseEntity {
+public class DetailWorktime extends BaseEntity {
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Long id;
 
 	@NotNull
-	private String title;
+	private LocalDate date;
 
 	@NotNull
-	private LocalTime startTime;
+	private DayOfWeek dayOfWeek;
 
 	@NotNull
-	private LocalTime endTime;
+	private Long amount;
 
 	@ManyToOne(fetch = FetchType.LAZY)
-	@JoinColumn(name = "week_id")
-	private Week week;
+	@JoinColumn(name = "worktime_id")
+	private Worktime worktime;
 
-	@OneToMany(fetch = FetchType.LAZY, mappedBy = "worktime")
-	private List<DetailWorktime> days;
+	@OneToMany(fetch = FetchType.LAZY, mappedBy = "detailWorktime")
+	private List<Apply> applies;
 
 	@Builder
-	public Worktime(Long id, String title, LocalTime startTime, LocalTime endTime, Week week,
-		List<DetailWorktime> days) {
+	public DetailWorktime(Long id, LocalDate date, DayOfWeek dayOfWeek, Long amount, Worktime worktime,
+		List<Apply> applies) {
 		this.id = id;
-		this.title = title;
-		this.startTime = startTime;
-		this.endTime = endTime;
-		this.week = week;
-		this.days = days;
-	}
-
-	public void updateWeek(Week week) {
-		this.week = week;
+		this.date = date;
+		this.dayOfWeek = dayOfWeek;
+		this.amount = amount;
+		this.worktime = worktime;
+		this.applies = applies;
 	}
 }
