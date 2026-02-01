@@ -15,8 +15,8 @@ import java.util.stream.Collectors;
 public class ScheduleGeneratorLoadTest {
 
     @Test
-    public void runRealisticAlbaLoadTest() {
-        // Data Setup: 3 shifts per day, 7 days, 2 people per shift
+    public void runFinalLoadTest() {
+        // Data Setup: Realistic Alba Scenario (3 shifts, 20 users)
         List<Worktime> worktimes = new ArrayList<>();
         String[] titles = {"Opening", "Mid", "Closing"};
         LocalTime[] starts = {LocalTime.of(9, 0), LocalTime.of(13, 0), LocalTime.of(18, 0)};
@@ -43,14 +43,14 @@ public class ScheduleGeneratorLoadTest {
                         .date(startDate.plusDays(i))
                         .dayOfWeek(startDate.plusDays(i).getDayOfWeek())
                         .worktime(wt)
-                        .amount(2L) // Need 2 people per shift
+                        .amount(2L)
                         .applies(new ArrayList<>())
                         .build());
             }
         }
 
         List<User> users = new ArrayList<>();
-        for (int i = 0; i < 20; i++) { // 20 users
+        for (int i = 0; i < 20; i++) {
             users.add(User.builder()
                     .id((long) (i + 1))
                     .kakaoId(1000L + i)
@@ -67,7 +67,6 @@ public class ScheduleGeneratorLoadTest {
         long applyIdCounter = 1;
         Random random = new Random(42);
         for (User user : users) {
-            // Each user randomly applies to 10 slots out of 21
             List<DetailWorktime> shuffled = new ArrayList<>(detailWorktimes);
             Collections.shuffle(shuffled, random);
             for (int i = 0; i < 10; i++) {
@@ -84,11 +83,10 @@ public class ScheduleGeneratorLoadTest {
         Map<Long, Long> requestMap = detailWorktimes.stream()
                 .collect(Collectors.toMap(DetailWorktime::getId, DetailWorktime::getAmount));
 
-        // Test
-        int iterations = 1000; 
+        int iterations = 1000;
         List<Long> latencies = new ArrayList<>();
 
-        System.out.println("Starting Realistic Alba Load Test... (" + iterations + " iterations)");
+        System.out.println("Starting Final Load Test (MRV Optimized)...");
 
         for (int i = 0; i < iterations; i++) {
             long start = System.nanoTime();
@@ -98,14 +96,11 @@ public class ScheduleGeneratorLoadTest {
         }
 
         Collections.sort(latencies);
-
         double p50 = latencies.get((int) (iterations * 0.50)) / 1_000_000.0;
         double p95 = latencies.get((int) (iterations * 0.95)) / 1_000_000.0;
         double p99 = latencies.get((int) (iterations * 0.99)) / 1_000_000.0;
 
-        System.out.println("Realistic Alba Load Test Results (ms):");
-        System.out.printf("P50: %.3f ms%n", p50);
-        System.out.printf("P95: %.3f ms%n", p95);
-        System.out.printf("P99: %.3f ms%n", p99);
+        System.out.println("Final Load Test Results (ms):");
+        System.out.printf("P50: %.3f ms | P95: %.3f ms | P99: %.3f ms%n", p50, p95, p99);
     }
 }
